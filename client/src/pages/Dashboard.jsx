@@ -27,6 +27,9 @@ export default function Dashboard() {
   const [title, setTitle] = useState("");
   const [resume, setResume] = useState(null);
   const [editResumeId, setEditResumeId] = useState("");
+  const [allResumes, setAllResumes] = useState([]);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [resumeToDelete, setResumeToDelete] = useState(null);
 
   const navigate = useNavigate();
 
@@ -45,6 +48,31 @@ export default function Dashboard() {
     e.preventDefault();
     setShowUploadResume(false);
     navigate(`/app/builder/res123`);
+  }
+
+  const editTitle = async (e) => {
+    e.preventDefault();
+    setEditResumeId("");
+    // Update resume title logic here
+  }
+
+  const deleteResume = async (resumeId) => {
+    setResumeToDelete(resumeId);
+    setShowDeleteConfirm(true);
+  }
+
+  const confirmDelete = async () => {
+    if (resumeToDelete) {
+      setResumes(prev => prev.filter(resume => resume._id !== resumeToDelete));
+      setAllResumes(prev => prev.filter(resume => resume._id !== resumeToDelete));
+      setShowDeleteConfirm(false);
+      setResumeToDelete(null);
+    }
+  }
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setResumeToDelete(null);
   }
 
   useEffect(() => {
@@ -84,6 +112,7 @@ export default function Dashboard() {
             return (
               <button
                 key={index}
+                onClick={() => navigate(`/app/builder/${resume._id}`)}
                 className="relative w-full sm:max-w-36 h-48 bg-white rounded-lg p-4 flex flex-col items-center justify-center hover:shadow-lg transition-all duration-300 text-center border border-slate-200 group cursor-pointer"
               >
                 <FilePenLineIcon className="size-7 group-hover:scale-105" />
@@ -93,9 +122,9 @@ export default function Dashboard() {
                 <p className="text-xs text-slate-500 group-hover:scale-105 transition-all px-2 text-center">
                   Last edited: {new Date(resume.updatedAt).toLocaleDateString()}
                 </p>
-                <div className="absolute top-1 right-1 group-hover:flex items-center hidden">
-                  <TrashIcon className="size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors" />
-                  <PencilIcon className="size-7 p-1.5 hover:bg-white/50 rounded text-slate-700 transition-colors" />
+                <div onClick={e => e.stopPropagation()} className="absolute top-1 right-1 group-hover:flex items-center hidden">
+                  <TrashIcon onClick={() => {deleteResume(resume._id)}} color="red" className="size-7 p-1.5 hover:bg-red-100 rounded text-slate-700 transition-colors" />
+                  <PencilIcon onClick={() => {setEditResumeId(resume._id); setTitle(resume.title)}} className="size-7 p-1.5 hover:bg-gray-100 rounded text-slate-700 transition-colors" />
                 </div>
               </button>
             );
@@ -200,6 +229,83 @@ export default function Dashboard() {
             </div>
           </form>
         )}
+
+        {editResumeId && (
+          <form
+            onSubmit={editTitle}
+            onClick={() => setEditResumeId("")}
+            className="fixed inset-0 bg-black/70 backdrop-blur bg-opacity-50 z-10 flex items-center justify-center"
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="relative bg-slate-50 border shadow-md rounded-lg w-full max-w-sm p-6"
+            >
+              <h2 className="text-lg font-medium text-black mb-4">
+                Edit Resume Title
+              </h2>
+              <input
+                type="text"
+                placeholder="Resume Title"
+                className="w-full px-4 py-2 mb-4 border border-red-800 rounded-lg focus:border-red-900 ring-red-800 outline-none transition"
+                required
+                onChange={(e) => setTitle(e.target.value)}
+                value={title}
+              />
+              <button
+                type="submit"
+                className="w-full py-2 bg-red-800 text-white rounded hover:bg-red-900 transition-colors"
+              >
+                Update
+              </button>
+              <XIcon
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors"
+                onClick={() => {
+                  setEditResumeId("");
+                  setTitle("");
+                }}
+              />
+            </div>
+          </form>
+        )}
+
+        {showDeleteConfirm && (
+          <div
+            onClick={cancelDelete}
+            className="fixed inset-0 bg-black/70 backdrop-blur bg-opacity-50 z-10 flex items-center justify-center"
+          >
+            <div onClick={(e) => e.stopPropagation()}>
+              <div className="flex flex-col items-center bg-white shadow-md rounded-xl py-6 px-5 md:w-[460px] w-[370px] border border-gray-200">
+                <div className="flex items-center justify-center p-4 bg-red-100 rounded-full">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.875 5.75h1.917m0 0h15.333m-15.333 0v13.417a1.917 1.917 0 0 0 1.916 1.916h9.584a1.917 1.917 0 0 0 1.916-1.916V5.75m-10.541 0V3.833a1.917 1.917 0 0 1 1.916-1.916h3.834a1.917 1.917 0 0 1 1.916 1.916V5.75m-5.75 4.792v5.75m3.834-5.75v5.75" stroke="#DC2626" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <h2 className="text-gray-900 font-semibold mt-4 text-xl">Are you sure?</h2>
+                <p className="text-sm text-gray-600 mt-2 text-center">
+                  Do you really want to delete this resume? This action<br />cannot be undone.
+                </p>
+                <div className="flex items-center justify-center gap-4 mt-5 w-full">
+                  <button 
+                    type="button" 
+                    onClick={cancelDelete}
+                    className="w-full md:w-36 h-10 rounded-md border border-gray-300 bg-white text-gray-600 font-medium text-sm hover:bg-gray-100 active:scale-95 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={confirmDelete}
+                    className="w-full md:w-36 h-10 rounded-md text-white bg-red-900 font-medium text-sm hover:bg-red-700 active:scale-95 transition"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        
       </div>
     </div>
   );
