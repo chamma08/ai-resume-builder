@@ -41,6 +41,12 @@ export default function Dashboard() {
     navigate(`/app/builder/res123`);
   };
 
+  const uploadResume = async (e) => {
+    e.preventDefault();
+    setShowUploadResume(false);
+    navigate(`/app/builder/res123`);
+  }
+
   useEffect(() => {
     fetchResumes();
   }, []);
@@ -62,7 +68,7 @@ export default function Dashboard() {
               Create Resume
             </p>
           </button>
-          <button className="w-full bg-white sm:max-w-36 h-48 flex flex-col items-center justify-center rounded-lg gap-2 text-slate-600 border border-dashed border-slate-300 group-hover:border-purple-500 hover:shadow-lg transition-all duration-300 cursor-pointer">
+          <button onClick={() => setShowUploadResume(true)} className="w-full bg-white sm:max-w-36 h-48 flex flex-col items-center justify-center rounded-lg gap-2 text-slate-600 border border-dashed border-slate-300 group-hover:border-purple-500 hover:shadow-lg transition-all duration-300 cursor-pointer">
             <UploadCloudIcon className="size-11 transition-all duration-300 p-2.5 bg-linear-to-br from-purple-300 to-purple-500 text-white rounded-full" />
             <p className="text-sm group-hover:text-purple-600 transition-all duration-300">
               Upload Existing
@@ -148,8 +154,8 @@ export default function Dashboard() {
                 Upload a Resume
               </h2>
               <input
-                type="file"
-                accept=".pdf,.doc,.docx"
+                type="text"
+                placeholder="Resume Title"
                 className="w-full px-4 py-2 mb-4 border border-red-800 rounded-lg focus:border-red-900 ring-red-800 outline-none transition"
                 required
                 onChange={(e) => setTitle(e.target.value)}
@@ -158,10 +164,25 @@ export default function Dashboard() {
               <div>
                 <label htmlFor="resume-input">
                   Choose Resume File
-                  <div className="flex flex-col items-center justify-center gap-2 border group text-slate-400 border-slate-">
-
+                  <div className="flex flex-col items-center justify-center gap-2 border group text-slate-400 border-slate-400 border-dashed rounded-md p-4 py-10 my-4 hover:border-red-800 cursor-pointer transition-colors hover:text-red-900">
+                    {resume ? (
+                      <p className="text-sm">{resume.name}</p>
+                    ) : (
+                      <>
+                        <UploadCloudIcon className="size-14 stroke-1" />
+                        <p className="text-sm">
+                          Drag & drop your file here, or click to select
+                        </p>
+                      </>
+                    )}
                   </div>
                 </label>
+                <input type="file"
+                  id="resume-input"
+                  hidden
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => setResume(e.target.files[0])}
+                />
               </div>
               <button
                 type="submit"
