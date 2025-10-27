@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-gradient-blue: #EAF2FF;
+  --color-gradient-pink: #FFF3F6;
+}
+
+* {
+  font-family: 'Outfit', sans-serif;
+}
+
+@layer base {
+  button {
+    @apply cursor-pointer;
+  }
+}
