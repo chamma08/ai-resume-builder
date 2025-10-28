@@ -87,7 +87,7 @@ export default function ResumeBuilder() {
 
               {/* Section Navigation */}
               <div className="flex justify-between items-center mb-6 border-b border-gray-300 py-1 ">
-                <div className="flex justify-between items-center mb-6 border-b border-gray-300 py-1">
+                <div className="flex items-center gap-2">
                   <TemplateSelector 
                     selectedTemplate={resumeData.template}
                     onChange={(template) =>
