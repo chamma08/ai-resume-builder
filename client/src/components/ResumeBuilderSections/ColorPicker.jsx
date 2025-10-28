@@ -28,7 +28,7 @@ export default function ColorPicker({ selectedColor, onChange }) {
           {colors.map((color) => (
             <div
               key={color.name}
-              onClick={() => onChange(color.value)}
+              onClick={() => { onChange(color.value); setIsOpen(false); }}
               className="relative flex flex-col cursor-pointer group"
             >
               <div
@@ -43,7 +43,7 @@ export default function ColorPicker({ selectedColor, onChange }) {
                   </div>
                 </div>
               )}
-              <p className="text-xs text-center mt-1">{color.name}</p>
+              <p className="text-xs text-center text-gray-500 mt-1">{color.name}</p>
             </div>
           ))}
         </div>
