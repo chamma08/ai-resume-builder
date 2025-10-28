@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import PersonalInfo from "../components/ResumeBuilderSections/PersonalInfo";
 import ResumePreview from "../components/ResumeBuilderSections/ResumePreview";
+import TemplateSelector from "../components/ResumeBuilderSections/TemplateSelector";
 
 export default function ResumeBuilder() {
   const { resumeId } = useParams();
@@ -86,8 +87,13 @@ export default function ResumeBuilder() {
 
               {/* Section Navigation */}
               <div className="flex justify-between items-center mb-6 border-b border-gray-300 py-1 ">
-                <div>
-                  
+                <div className="flex justify-between items-center mb-6 border-b border-gray-300 py-1">
+                  <TemplateSelector 
+                    selectedTemplate={resumeData.template}
+                    onChange={(template) =>
+                      setResumeData((prev) => ({ ...prev, template }))
+                    }
+                  />
                 </div>
 
                 <div className="flex items-center">

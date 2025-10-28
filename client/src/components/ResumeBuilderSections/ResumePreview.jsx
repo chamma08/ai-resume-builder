@@ -4,7 +4,6 @@ import ClassicTemplate from "../templates/ClassicTemplate";
 import MinimalImageTemplate from "../templates/MinimalImageTemplate";
 import MinimalTemplate from "../templates/MinimalTemplate";
 import ElegantTemplate from "../templates/ElegantTemplate";
-import CorporateTemplate from "../templates/CorporateTemplate";
 
 export default function ResumePreview({
   data,
@@ -45,7 +44,7 @@ export default function ResumePreview({
         {renderTemplate()}
 
         {
-          <style jsx>
+          <style >
             {`
               @page {
                 size: letter;
