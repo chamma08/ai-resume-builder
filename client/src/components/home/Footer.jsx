@@ -14,7 +14,7 @@ export default function Footer() {
               <h1 className="text-3xl font-bold">Job Labs</h1>
             </div>
 
-            <p className="text-base text-gray-300 leading-relaxed mb-6 line-clamp-7">
+            <p className="text-base text-gray-300 leading-relaxed mb-6 line-clamp-8">
               <span className="font-semibold text-white">
                 Real Jobs for Real People.
               </span>{" "}
