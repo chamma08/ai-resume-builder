@@ -12,6 +12,7 @@ import {
   SparkleIcon,
   User,
 } from "lucide-react";
+import PersonalInfo from "../components/ResumeBuilderSections/PersonalInfo";
 
 export default function ResumeBuilder() {
   const { resumeId } = useParams();
@@ -74,7 +75,7 @@ export default function ResumeBuilder() {
               {/* Progress bar using activeSectionIndex */}
               <hr className="absolute top-0 left-0 right-0 border-2 border-gray-200" />
               <hr
-                className="absolute top-0 left-0 h-1 bg-linear-to-r from-green-500 border-none transition-all duration-2000"
+                className="absolute top-0 left-0 h-1 bg-linear-to-r from-green-600 border-none transition-all duration-2000"
                 style={{
                   width: `${
                     (activeSectionIndex * 100) / (sections.length - 1)
@@ -119,11 +120,22 @@ export default function ResumeBuilder() {
 
               {/* Form Content */}
               <div className="space-y-6">
-                  {activeSection.id === "personal" && (
-                    <div></div>
-                  )}
+                {activeSection.id === "personal" && (
+                  <div>
+                    <PersonalInfo
+                      data={resumeData.personal_info}
+                      onChange={(data) =>
+                        setResumeData((prev) => ({
+                          ...prev,
+                          personal_info: data,
+                        }))
+                      }
+                      removeBackground={removeBackground}
+                      setRemoveBackground={setRemoveBackground}
+                    />
+                  </div>
+                )}
               </div>
-
             </div>
           </div>
 
