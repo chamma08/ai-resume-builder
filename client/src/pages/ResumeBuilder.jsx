@@ -15,6 +15,7 @@ import {
 import PersonalInfo from "../components/ResumeBuilderSections/PersonalInfo";
 import ResumePreview from "../components/ResumeBuilderSections/ResumePreview";
 import TemplateSelector from "../components/ResumeBuilderSections/TemplateSelector";
+import ColorPicker from "../components/ResumeBuilderSections/ColorPicker";
 
 export default function ResumeBuilder() {
   const { resumeId } = useParams();
@@ -92,6 +93,12 @@ export default function ResumeBuilder() {
                     selectedTemplate={resumeData.template}
                     onChange={(template) =>
                       setResumeData((prev) => ({ ...prev, template }))
+                    }
+                  />
+                  <ColorPicker
+                    selectedColor={resumeData.accent_color}
+                    onChange={(color) =>
+                      setResumeData((prev) => ({ ...prev, accent_color: color }))
                     }
                   />
                 </div>
