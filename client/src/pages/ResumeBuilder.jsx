@@ -16,6 +16,7 @@ import PersonalInfo from "../components/ResumeBuilderSections/PersonalInfo";
 import ResumePreview from "../components/ResumeBuilderSections/ResumePreview";
 import TemplateSelector from "../components/ResumeBuilderSections/TemplateSelector";
 import ColorPicker from "../components/ResumeBuilderSections/ColorPicker";
+import ProfessionalSummary from "../components/ResumeBuilderSections/ProfessionalSummary";
 
 export default function ResumeBuilder() {
   const { resumeId } = useParams();
@@ -89,7 +90,7 @@ export default function ResumeBuilder() {
               {/* Section Navigation */}
               <div className="flex justify-between items-center mb-6 border-b border-gray-300 py-1 ">
                 <div className="flex items-center gap-2">
-                  <TemplateSelector 
+                  <TemplateSelector
                     selectedTemplate={resumeData.template}
                     onChange={(template) =>
                       setResumeData((prev) => ({ ...prev, template }))
@@ -98,7 +99,10 @@ export default function ResumeBuilder() {
                   <ColorPicker
                     selectedColor={resumeData.accent_color}
                     onChange={(color) =>
-                      setResumeData((prev) => ({ ...prev, accent_color: color }))
+                      setResumeData((prev) => ({
+                        ...prev,
+                        accent_color: color,
+                      }))
                     }
                   />
                 </div>
@@ -151,22 +155,33 @@ export default function ResumeBuilder() {
                     />
                   </div>
                 )}
+
+                {activeSection.id === "summary" && (
+                  <ProfessionalSummary
+                    data={resumeData.professional_summary}
+                    onChange={(data) =>
+                      setResumeData((prev) => ({
+                        ...prev,
+                        professional_summary: data,
+                      }))
+                    }
+                    setResumeData={setResumeData}
+                  />
+                )}
               </div>
             </div>
           </div>
 
           {/* Right Side */}
           <div className="lg:col-span-7 max-lg:mt-6">
-                <div>
-                  {/* Buttons */}
-                </div>
+            <div>{/* Buttons */}</div>
 
-                {/* Resume Preview */}
-                <ResumePreview 
-                  data={resumeData}
-                  template={resumeData.template}
-                  accentColor={resumeData.accent_color}
-                />
+            {/* Resume Preview */}
+            <ResumePreview
+              data={resumeData}
+              template={resumeData.template}
+              accentColor={resumeData.accent_color}
+            />
           </div>
 
           <div></div>
