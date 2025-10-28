@@ -13,6 +13,7 @@ import {
   User,
 } from "lucide-react";
 import PersonalInfo from "../components/ResumeBuilderSections/PersonalInfo";
+import ResumePreview from "../components/ResumeBuilderSections/ResumePreview";
 
 export default function ResumeBuilder() {
   const { resumeId } = useParams();
@@ -85,7 +86,9 @@ export default function ResumeBuilder() {
 
               {/* Section Navigation */}
               <div className="flex justify-between items-center mb-6 border-b border-gray-300 py-1 ">
-                <div></div>
+                <div>
+                  
+                </div>
 
                 <div className="flex items-center">
                   {activeSectionIndex !== 0 && (
@@ -140,6 +143,19 @@ export default function ResumeBuilder() {
           </div>
 
           {/* Right Side */}
+          <div className="lg:col-span-7 max-lg:mt-6">
+                <div>
+                  {/* Buttons */}
+                </div>
+
+                {/* Resume Preview */}
+                <ResumePreview 
+                  data={resumeData}
+                  template={resumeData.template}
+                  accentColor={resumeData.accent_color}
+                />
+          </div>
+
           <div></div>
         </div>
       </div>

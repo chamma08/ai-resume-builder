@@ -4,6 +4,7 @@ import ClassicTemplate from "../templates/ClassicTemplate";
 import MinimalImageTemplate from "../templates/MinimalImageTemplate";
 import MinimalTemplate from "../templates/MinimalTemplate";
 import ElegantTemplate from "../templates/ElegantTemplate";
+import CorporateTemplate from "../templates/CorporateTemplate";
 
 export default function ResumePreview({
   data,
@@ -13,7 +14,6 @@ export default function ResumePreview({
 }) {
   const renderTemplate = () => {
     switch (template) {
-
       case "modern":
         return <ModernTemplate data={data} accentColor={accentColor} />;
 
@@ -25,6 +25,9 @@ export default function ResumePreview({
 
       case "elegant":
         return <ElegantTemplate data={data} accentColor={accentColor} />;
+
+      /* case "corporate":
+            return <CorporateTemplate data={data} accentColor={accentColor} />; */
 
       default:
         return <MinimalTemplate data={data} accentColor={accentColor} />;
@@ -41,38 +44,42 @@ export default function ResumePreview({
       >
         {renderTemplate()}
 
-        <style jsx>
+        {
+          <style jsx>
             {`
-                @page {
-                    size: letter;
-                    margin: 0;
+              @page {
+                size: letter;
+                margin: 0;
+              }
+              @media print {
+                html,
+                body {
+                  width: 8.5in;
+                  height: 11in;
+                  overflow: hidden;
                 }
-                @media print {
-                    html, body {
-                        width: 8.5in;
-                        height: 11in;
-                        overflow: hidden;
-                    }
-                    body * {
-                        visibility: hidden;
-                    }
-                    #resume-preview, #resume-preview * {
-                        visibility: visible;
-                    }
-                    #resume-preview {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 100%;
-                        height: auto;
-                        margin: 0;
-                        padding: 0;
-                        box-shadow: none !important;
-                        border: none !important;
-                    }
+                body * {
+                  visibility: hidden;
                 }
+                #resume-preview,
+                #resume-preview * {
+                  visibility: visible;
+                }
+                #resume-preview {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  width: 100%;
+                  height: auto;
+                  margin: 0;
+                  padding: 0;
+                  box-shadow: none !important;
+                  border: none !important;
+                }
+              }
             `}
-        </style>
+          </style>
+        }
       </div>
     </div>
   );
