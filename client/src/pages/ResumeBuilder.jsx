@@ -20,6 +20,7 @@ import ProfessionalSummary from "../components/ResumeBuilderSections/Professiona
 import Experience from "../components/ResumeBuilderSections/Experience";
 import Education from "../components/ResumeBuilderSections/Education";
 import Project from "../components/ResumeBuilderSections/Project";
+import Skills from "../components/ResumeBuilderSections/Skills";
 
 export default function ResumeBuilder() {
   const { resumeId } = useParams();
@@ -206,6 +207,20 @@ export default function ResumeBuilder() {
                     }
                   />
                 )}
+
+                {activeSection.id === "skills" && (
+                  <Skills
+                    data={resumeData.skills}
+                    onChange={(data) =>
+                      setResumeData((prev) => ({
+                        ...prev,
+                        skills: data,
+                      }))
+                    }
+                  />
+                )}
+
+                
               </div>
             </div>
           </div>
