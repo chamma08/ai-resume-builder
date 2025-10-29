@@ -19,6 +19,7 @@ import ColorPicker from "../components/ResumeBuilderSections/ColorPicker";
 import ProfessionalSummary from "../components/ResumeBuilderSections/ProfessionalSummary";
 import Experience from "../components/ResumeBuilderSections/Experience";
 import Education from "../components/ResumeBuilderSections/Education";
+import Project from "../components/ResumeBuilderSections/Project";
 
 export default function ResumeBuilder() {
   const { resumeId } = useParams();
@@ -49,12 +50,11 @@ export default function ResumeBuilder() {
 
   const sections = [
     { id: "personal", title: "Personal Info", icon: User },
-/*     { id: "summary", title: "Summary", icon: FileText }, */
     { id: "professional_summary", title: "Professional Summary", icon: User },
     { id: "experience", title: "Experience", icon: Briefcase },
     { id: "education", title: "Education", icon: GraduationCap },
-    { id: "skills", title: "Skills", icon: SparkleIcon },
     { id: "projects", title: "Projects", icon: FolderIcon },
+    { id: "skills", title: "Skills", icon: SparkleIcon },
   ];
 
   const activeSection = sections[activeSectionIndex];
@@ -182,6 +182,7 @@ export default function ResumeBuilder() {
                     }
                   />
                 )}
+
                 {activeSection.id === "education" && (
                   <Education
                     data={resumeData.education}
@@ -194,7 +195,17 @@ export default function ResumeBuilder() {
                   />
                 )}
 
-                
+                {activeSection.id === "projects" && (
+                  <Project
+                    data={resumeData.project}
+                    onChange={(data) =>
+                      setResumeData((prev) => ({
+                        ...prev,
+                        project: data,
+                      }))
+                    }
+                  />
+                )}
               </div>
             </div>
           </div>
