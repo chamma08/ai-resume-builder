@@ -18,6 +18,7 @@ import TemplateSelector from "../components/ResumeBuilderSections/TemplateSelect
 import ColorPicker from "../components/ResumeBuilderSections/ColorPicker";
 import ProfessionalSummary from "../components/ResumeBuilderSections/ProfessionalSummary";
 import Experience from "../components/ResumeBuilderSections/Experience";
+import Education from "../components/ResumeBuilderSections/Education";
 
 export default function ResumeBuilder() {
   const { resumeId } = useParams();
@@ -177,6 +178,17 @@ export default function ResumeBuilder() {
                       setResumeData((prev) => ({
                         ...prev,
                         experience: data,
+                      }))
+                    }
+                  />
+                )}
+                {activeSection.id === "education" && (
+                  <Education
+                    data={resumeData.education}
+                    onChange={(data) =>
+                      setResumeData((prev) => ({
+                        ...prev,
+                        education: data,
                       }))
                     }
                   />

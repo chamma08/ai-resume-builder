@@ -5,8 +5,8 @@ export default function Experience({ data, onChange }) {
     const newExperience = {
       company: "",
       position: "",
-      start_Date: "",
-      end_Date: "",
+      start_date: "",
+      end_date: "",
       description: "",
       is_current: false,
     };
@@ -86,17 +86,17 @@ export default function Experience({ data, onChange }) {
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300"
                 />
                 <input
-                  value={experience.start_Date || ""}
+                  value={experience.start_date || ""}
                   onChange={(e) =>
-                    updateExperience(index, "start_Date", e.target.value)
+                    updateExperience(index, "start_date", e.target.value)
                   }
                   type="month"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300"
                 />
                 <input
-                  value={experience.end_Date || ""}
+                  value={experience.end_date || ""}
                   onChange={(e) =>
-                    updateExperience(index, "end_Date", e.target.value)
+                    updateExperience(index, "end_date", e.target.value)
                   }
                   type="month"
                   disabled={experience.is_current}
