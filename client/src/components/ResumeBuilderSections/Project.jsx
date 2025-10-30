@@ -70,7 +70,7 @@ export default function Project({ data, onChange }) {
                 <input
                   value={project.name || ""}
                   onChange={(e) =>
-                    updateProject(index, "title", e.target.value)
+                    updateProject(index, "name", e.target.value)
                   }
                   type="text"
                   placeholder="Project Title"
