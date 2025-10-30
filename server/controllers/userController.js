@@ -77,3 +77,23 @@ export const signIn = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+export const getUserById = async (req, res) => {
+    try {
+        const userId = userId
+        const user = await User.findById(userId).select("-password");
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        return res.status(200).json({
+            message: "User retrieved successfully",
+            user: {
+                ...user.toObject(),
+                password: undefined,
+            },
+        });
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
