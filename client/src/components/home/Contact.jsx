@@ -19,7 +19,7 @@ export default function Contact() {
               <label className="text-sm font-medium text-gray-700 block">Full Name</label>
               <input
                 type="text"
-                placeholder="John Doe"
+                placeholder="Christ Mike"
                 className="w-full border-2 border-gray-200 focus:border-red-900 focus:ring-2 focus:ring-red-200 p-3 rounded-lg transition-all duration-200 outline-none"
               />
             </div>
@@ -27,7 +27,7 @@ export default function Contact() {
               <label className="text-sm font-medium text-gray-700 block">Email Address</label>
               <input
                 type="email"
-                placeholder="john.doe@example.com"
+                placeholder="christ.mike@example.com"
                 className="w-full border-2 border-gray-200 focus:border-red-900 focus:ring-2 focus:ring-red-200 p-3 rounded-lg transition-all duration-200 outline-none"
               />
             </div>
