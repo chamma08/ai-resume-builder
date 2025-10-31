@@ -2,9 +2,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import logo from "../../assets/job_logo.png";
+import { useSelector } from "react-redux";
 
 export const Hero = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const {user} = useSelector((state) => state.auth);
 
   const logos = [
     "https://saasly.prebuiltui.com/assets/companies-logo/instagram.svg",
@@ -85,8 +88,11 @@ export const Hero = () => {
           </div>
 
           <div className="flex gap-2 mt-8">
-            <Link to={"/sign-in"} className="hidden md:block px-6 py-2 border active:scale-95 hover:bg-slate-50 transition-all rounded-full text-slate-700 hover:text-slate-900 border-slate-300">
+            <Link to={"/sign-in"} hidden={user} className="hidden md:block px-6 py-2 border active:scale-95 hover:bg-slate-50 transition-all rounded-full text-slate-700 hover:text-slate-900 border-slate-300">
               Login
+            </Link>
+            <Link to={"/app"} hidden={!user} className="hidden md:block px-6 py-2 border active:scale-95 hover:bg-slate-50 transition-all rounded-full text-slate-700 hover:text-slate-900 border-red-900">
+              Dashboard
             </Link>
           </div>
 
@@ -216,7 +222,7 @@ export const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex items-center gap-4 ">
-            <Link to="/app" className="bg-red-800 hover:bg-red-900 text-white rounded-full px-9 h-12 m-1 ring-offset-2 ring-1 ring-red-700 flex items-center transition-colors">
+            <Link to="/app" hidden={user} className="bg-red-800 hover:bg-red-900 text-white rounded-full px-9 h-12 m-1 ring-offset-2 ring-1 ring-red-700 flex items-center transition-colors">
               Get started
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -234,6 +240,9 @@ export const Hero = () => {
                 <path d="M5 12h14"></path>
                 <path d="m12 5 7 7-7 7"></path>
               </svg>
+            </Link>
+            <Link to="/app" className="bg-red-800 hover:bg-red-900 text-white rounded-full px-9 h-12 m-1 ring-offset-2 ring-1 ring-red-700 flex items-center transition-colors" hidden={!user}>
+              Welcome Back
             </Link>
           </div>
 
