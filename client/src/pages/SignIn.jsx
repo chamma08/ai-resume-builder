@@ -1,12 +1,68 @@
 import { Home, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/features/authSlice";
 import s1 from '../assets/s2.jpg';
 import logo from '../assets/job_logo.png';
+import API from "../configs/api";
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  }
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    
+    // Validation
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all fields", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data } = await API.post("/api/users/sign-in", formData);
+      if (data.status === 200 || data.token) {
+        toast.success("Login successful!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        localStorage.setItem("token", data.token);
+        dispatch(login({ user: data.user, token: data.token }));
+        setFormData({ email: "", password: "" });
+        setTimeout(() => {
+          navigate("/app");
+        }, 1000);
+      }
+    } catch (error) {
+      console.error("Sign in error:", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to log in. Please try again.";
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 4000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-pink-100 via-purple-100 to-blue-100 p-3 sm:p-4 md:p-6 relative">
@@ -58,6 +114,8 @@ export default function SignIn() {
                 type="email"
                 placeholder="Enter your email"
                 id="email"
+                value={formData.email}
+                onChange={handleChange}
                 className="w-full rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition-all"
                 required
               />
@@ -72,6 +130,8 @@ export default function SignIn() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   id="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   className="w-full rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm sm:text-base outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition-all"
                   required
                 />
@@ -111,9 +171,11 @@ export default function SignIn() {
 
             <button
               type="button"
+              onClick={handleSubmit}
+              disabled={loading}
               className="w-full rounded-lg bg-red-800 px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium text-white transition-all hover:bg-red-900 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
-              Sign In
+              {loading ? "Signing In..." : "Sign In"}
             </button>
 
             <div className="relative py-2">

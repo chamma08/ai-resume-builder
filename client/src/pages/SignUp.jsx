@@ -10,6 +10,7 @@ import API from "../configs/api";
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -26,18 +27,37 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validation
+    if (!formData.name || !formData.email || !formData.password) {
+      toast.error("Please fill in all fields", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    if (formData.password.length < 8) {
+      toast.error("Password must be at least 8 characters", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    setLoading(true);
     try {
-      const response = await API.post("/api/users/sign-up", formData);
+      const { data } = await API.post("/api/users/sign-up", formData);
       // Check for successful response (status 201)
-      if (response.status === 201 || response.data.token) {
+      if (data.status === 201 || data.token) {
         toast.success("Account Created successfully! ", {
           position: "top-right",
           autoClose: 3000,
         });
         // Store token in localStorage
-        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("token", data.token);
         // Update Redux state
-        dispatch(login({ user: response.data.user, token: response.data.token }));
+        dispatch(login({ user: data.user, token: data.token }));
         // Clear form fields
         setFormData({ name: "", email: "", password: "" });
         // Navigate to dashboard after a short delay
@@ -46,6 +66,7 @@ export default function SignUp() {
         }, 1000);
       }
     } catch (error) {
+      console.error("Sign up error:", error);
       const errorMessage =
         error.response?.data?.message ||
         "Failed to create account. Please try again.";
@@ -53,6 +74,8 @@ export default function SignUp() {
         position: "top-right",
         autoClose: 4000,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -205,9 +228,10 @@ export default function SignUp() {
             <button
               type="button"
               onClick={handleSubmit}
+              disabled={loading}
               className="w-full rounded-lg bg-red-800 px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium text-white transition-all hover:bg-red-900 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
-              Create Account
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
 
             <div className="relative py-2">

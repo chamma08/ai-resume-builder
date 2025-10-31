@@ -6,8 +6,9 @@ export const protect = async (req, res, next) => {
     return res.status(401).json({ message: "No token provided" });
   }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.id;
+    const tokenWithoutBearer = token.replace("Bearer ", "");
+    const decoded = jwt.verify(tokenWithoutBearer, process.env.JWT_SECRET);
+    req.userId = decoded.userId;
     next();
   } catch (error) {
     return res.status(401).json({ message: "Invalid token" });
