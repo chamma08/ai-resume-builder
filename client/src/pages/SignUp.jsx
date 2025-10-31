@@ -2,6 +2,8 @@ import { Home, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { login, setLoading } from "../redux/features/authSlice";
 import s2 from "../assets/s1.jpg";
 import logo from "../assets/job_logo.png";
 import API from "../configs/api";
@@ -9,6 +11,9 @@ import API from "../configs/api";
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,11 +34,15 @@ export default function SignUp() {
           position: "top-right",
           autoClose: 3000,
         });
+        // Store token in localStorage
+        localStorage.setItem("token", response.data.token);
+        // Update Redux state
+        dispatch(login({ user: response.data.user, token: response.data.token }));
         // Clear form fields
         setFormData({ name: "", email: "", password: "" });
-        // Navigate to sign-in page after a short delay
+        // Navigate to dashboard after a short delay
         setTimeout(() => {
-          navigate("/sign-in");
+          navigate("/app");
         }, 1000);
       }
     } catch (error) {
