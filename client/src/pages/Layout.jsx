@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import bgMain from "../assets/bg-main.svg";
 import Navbar from "../components/Navbar";
 import Breadcrumb from "../components/Breadcrumb";
@@ -8,13 +8,15 @@ import LoadingScreen from "../components/LoadingScreen";
 
 export default function Layout() {
   const { user, loading } = useSelector((state) => state.auth);
+  const location = useLocation();
 
   if (loading) {
     return <LoadingScreen />;
   }
 
   if (!user) {
-    return <Navigate to="/sign-in" replace />;
+    // Preserve the attempted location to redirect after login
+    return <Navigate to="/sign-in" state={{ from: location }} replace />;
   }
 
   return (

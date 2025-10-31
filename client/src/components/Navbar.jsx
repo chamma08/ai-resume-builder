@@ -1,12 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom'
 import logo from '../assets/job_logo.png'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout } from '../redux/features/authSlice'
 
 export default function Navbar() {
-    const user = { name: 'Matheesha Dissanayake' }
+    const {user} = useSelector((state) => state.auth)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const handleLogout = () => {
-        navigate('/sign-in')
+        dispatch(logout())
+        window.location.href = '/'
     }
 
   return (
