@@ -30,7 +30,7 @@ export default function SignUp() {
       const response = await API.post("/api/users/sign-up", formData);
       // Check for successful response (status 201)
       if (response.status === 201 || response.data.token) {
-        toast.success("Account created successfully! Please sign in.", {
+        toast.success("Account Created successfully! ", {
           position: "top-right",
           autoClose: 3000,
         });
