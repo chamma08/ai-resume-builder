@@ -1,12 +1,52 @@
 import { Home, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import s2 from '../assets/s1.jpg';
-import logo from '../assets/job_logo.png';
+import { toast } from "react-toastify";
+import s2 from "../assets/s1.jpg";
+import logo from "../assets/job_logo.png";
+import API from "../configs/api";
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await API.post("/api/users/sign-up", formData);
+      console.log("Signup response:", response.data);
+
+      // Check for successful response (status 201)
+      if (response.status === 201 || response.data.token) {
+        toast.success("Account created successfully! Please sign in.", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        // Clear form fields
+        setFormData({ name: "", email: "", password: "" });
+        // Navigate to sign-in page after a short delay
+        setTimeout(() => {
+          navigate("/sign-in");
+        }, 1000);
+      }
+    } catch (error) {
+      console.error("Error signing up:", error);
+      const errorMessage = error.response?.data?.message || "Failed to create account. Please try again.";
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 4000,
+      });
+    }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-linear-to-br from-pink-100 via-purple-100 to-blue-100 p-3 sm:p-4 md:p-6 relative">
@@ -23,9 +63,9 @@ export default function SignUp() {
         {/* Left Side - Image/Message */}
         <div
           className="hidden md:flex md:w-1/2 bg-cover bg-center p-8 lg:p-10 text-white relative min-h-[300px] md:min-h-0"
-          style={{ 
+          style={{
             backgroundImage: `url(${s2})`,
-            backgroundPosition: 'center'
+            backgroundPosition: "center",
           }}
         >
           <div className="absolute inset-0 bg-black/50"></div>
@@ -43,41 +83,60 @@ export default function SignUp() {
         <div className="w-full md:w-1/2 bg-white p-6 sm:p-8 md:p-10 lg:p-12">
           {/* Mobile Header */}
           <div className="md:hidden text-center mb-6">
-            <h1 className="text-2xl font-bold text-black mb-2">Create Account</h1>
+            <h1 className="text-2xl font-bold text-black mb-2">
+              Create Account
+            </h1>
             <p className="text-sm text-gray-600">Sign up to get started</p>
           </div>
 
-          <img src={logo} alt="Sign Up" className="w-20 justify-center mx-auto mb-6" />
+          <img
+            src={logo}
+            alt="Sign Up"
+            className="w-20 justify-center mx-auto mb-6"
+          />
 
           <div className="space-y-4 sm:space-y-5">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
+              >
                 Full Name
               </label>
               <input
                 type="text"
                 placeholder="Enter your full name"
                 id="name"
+                value={formData.name}
+                onChange={handleChange}
                 className="w-full rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition-all"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
+              >
                 Email
               </label>
               <input
                 type="email"
                 placeholder="Enter your email"
                 id="email"
+                value={formData.email}
+                onChange={handleChange}
                 className="w-full rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition-all"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-1.5"
+              >
                 Password
               </label>
               <div className="relative">
@@ -85,6 +144,8 @@ export default function SignUp() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a password"
                   id="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   className="w-full rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm sm:text-base outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition-all"
                   required
                 />
@@ -111,15 +172,23 @@ export default function SignUp() {
                 type="checkbox"
                 id="terms"
                 className="w-4 h-4 mt-0.5 accent-black cursor-pointer"
-                required
               />
-              <label htmlFor="terms" className="text-xs sm:text-sm text-gray-600 cursor-pointer">
+              <label
+                htmlFor="terms"
+                className="text-xs sm:text-sm text-gray-600 cursor-pointer"
+              >
                 I agree to the{" "}
-                <a href="/terms" className="text-black hover:underline font-medium">
+                <a
+                  href="/terms"
+                  className="text-black hover:underline font-medium"
+                >
                   Terms of Service
                 </a>{" "}
                 and{" "}
-                <a href="/privacy" className="text-black hover:underline font-medium">
+                <a
+                  href="/privacy"
+                  className="text-black hover:underline font-medium"
+                >
                   Privacy Policy
                 </a>
               </label>
@@ -127,6 +196,7 @@ export default function SignUp() {
 
             <button
               type="button"
+              onClick={handleSubmit}
               className="w-full rounded-lg bg-red-800 px-4 py-2.5 sm:py-3 text-sm sm:text-base font-medium text-white transition-all hover:bg-red-900 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               Create Account
@@ -144,7 +214,10 @@ export default function SignUp() {
 
           <div className="mt-4 sm:mt-6 text-center text-xs sm:text-sm text-gray-600">
             Already have an account?{" "}
-            <a href="/sign-in" className="text-red-900 hover:text-red-700 font-semibold hover:underline transition-colors">
+            <a
+              href="/sign-in"
+              className="text-red-900 hover:text-red-700 font-semibold hover:underline transition-colors"
+            >
               Sign in
             </a>
           </div>
