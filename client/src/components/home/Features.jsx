@@ -1,6 +1,7 @@
 import { useState } from "react";
+import Title from "./Title";
 
-const Title = ({ title, description }) => (
+/* const Title = ({ title, description }) => (
   <div className="text-center mb-8 md:mb-12 px-4">
     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 mb-3 md:mb-4">
       {title}
@@ -9,14 +10,14 @@ const Title = ({ title, description }) => (
       {description}
     </p>
   </div>
-);
+); */
 
 const Features = () => {
   const [isHover, setIsHover] = useState(false);
 
   return (
     <div id="features" className="flex flex-col items-center py-12 md:py-16 lg:py-20 px-4">
-      <div className="flex items-center gap-2 text-xs md:text-sm text-red-800 bg-red-400/10 border border-red-200 rounded-full px-3 md:px-4 py-1.5 md:py-2 mb-6 md:mb-8">
+      <div className="flex items-center gap-2 text-xs md:text-sm text-red-800 bg-red-400/10 border border-red-200 rounded-full px-3 md:px-4 py-1.5 md:py-2 mb-4 md:mb-6">
         <span>🚀</span>
         <span>Simple Process</span>
       </div>
