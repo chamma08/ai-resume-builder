@@ -6,7 +6,7 @@ import {
   getResumeById,
   updateResume,
 } from "../controllers/resumeController.js";
-import { protect } from "../middlewares/authMiddleware.s";
+import { protect } from "../middlewares/authMiddleware.js";
 import upload from "../configs/multer.js";
 
 const router = express.Router();
