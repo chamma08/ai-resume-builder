@@ -23,8 +23,6 @@ export default function SignUp() {
     e.preventDefault();
     try {
       const response = await API.post("/api/users/sign-up", formData);
-      console.log("Signup response:", response.data);
-
       // Check for successful response (status 201)
       if (response.status === 201 || response.data.token) {
         toast.success("Account created successfully! Please sign in.", {
@@ -39,8 +37,9 @@ export default function SignUp() {
         }, 1000);
       }
     } catch (error) {
-      console.error("Error signing up:", error);
-      const errorMessage = error.response?.data?.message || "Failed to create account. Please try again.";
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to create account. Please try again.";
       toast.error(errorMessage, {
         position: "top-right",
         autoClose: 4000,
