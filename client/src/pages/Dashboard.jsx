@@ -115,7 +115,7 @@ export default function Dashboard() {
       e.preventDefault();
       const { data } = await API.put(
         "/api/resumes/update-resume",
-        { resumeId: editResumeId, resumeData: { title } },
+        { resumeId: editResumeId, resumeData: JSON.stringify({ title }) },
         {
           headers: {
             Authorization: token,
@@ -136,8 +136,7 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Error updating resume title:", error);
       toast.error(
-        "Failed to update resume title. Please try again.",
-        error.message
+        "Failed to update resume title. Please try again."
       );
     }
   };

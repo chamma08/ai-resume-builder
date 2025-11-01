@@ -14,7 +14,7 @@ const ResumeSchema = new mongoose.Schema(
       location: { type: String, default: "" },
       linkedin: { type: String, default: "" },
       website: { type: String, default: "" },
-      proffession: { type: String, default: "" },
+      profession: { type: String, default: "" },
       image: { type: String, default: "" },
     },
     experience: [
@@ -36,7 +36,7 @@ const ResumeSchema = new mongoose.Schema(
         gpa: { type: String, default: "" },
       },
     ],
-    templates: { type: String, default: "Classic" },
+    template: { type: String, default: "classic" },
     accent_color: { type: String, default: "#3B82F6" },
     project: [
       {

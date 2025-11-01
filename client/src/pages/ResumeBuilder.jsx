@@ -27,6 +27,7 @@ import Project from "../components/ResumeBuilderSections/Project";
 import Skills from "../components/ResumeBuilderSections/Skills";
 import { useSelector } from "react-redux";
 import API from "../configs/api";
+import { toast } from "react-toastify";
 
 export default function ResumeBuilder() {
   const { resumeId } = useParams();
@@ -101,6 +102,35 @@ export default function ResumeBuilder() {
   const downloadResume = () => {
     window.print();
   };
+
+  const saveResume = async() => {
+    try {
+      let updatedResumeData = structuredClone(resumeData);
+
+      //Remove image from resume data
+      if(typeof resumeData.personal_info.image === "object") {
+        delete updatedResumeData.personal_info.image;
+      }
+
+      const formData = new FormData();
+      formData.append("resumeId", resumeId);
+      formData.append("resumeData", JSON.stringify(updatedResumeData));
+      
+      removeBackground && formData.append("removeBackground", "yes");
+      typeof resumeData.personal_info.image === "object" && formData.append("image", resumeData.personal_info.image);
+
+      const { data } = await API.put("/api/resumes/update-resume", formData, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setResumeData(data.resume);
+      toast.success(data.message);
+    } catch (error) {
+      console.error("Error saving resume:", error);
+      toast.error("Failed to save resume.");
+    }
+  }
 
   const shareResume = async () => {
     const frontednUrl = window.location.href.split("/app")[0];
@@ -266,7 +296,7 @@ export default function ResumeBuilder() {
                 )}
               </div>
 
-              <button className="mt-6 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <button onClick={() => {toast.promise(saveResume(), {pending: "Saving...", success: "Resume saved successfully!", error: "Failed to save resume"})}} className="mt-6 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition-colors">
                 Save Changes
               </button>
             </div>
