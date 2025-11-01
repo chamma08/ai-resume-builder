@@ -25,9 +25,14 @@ import Experience from "../components/ResumeBuilderSections/Experience";
 import Education from "../components/ResumeBuilderSections/Education";
 import Project from "../components/ResumeBuilderSections/Project";
 import Skills from "../components/ResumeBuilderSections/Skills";
+import { useSelector } from "react-redux";
+import API from "../configs/api";
 
 export default function ResumeBuilder() {
   const { resumeId } = useParams();
+
+  const { token } = useSelector((state) => state.auth);
+
   const [resumeData, setResumeData] = useState({
     _id: "",
     title: "",
@@ -43,10 +48,18 @@ export default function ResumeBuilder() {
   });
 
   const loadExistingResume = async () => {
-    const resume = dummyResumeData.find((resume) => resume._id === resumeId);
-    if (resume) {
-      setResumeData(resume);
-      document.title = `Editing Resume - ${resume.title}`;
+    try {
+      const { data } = await API.get(`/api/resumes/get-resume/${resumeId}`, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      if (data.resume) {
+        setResumeData(data.resume);
+        document.title = `Editing Resume - ${data.resume.title}`;
+      }
+    } catch (error) {
+      console.error("Error loading existing resume:", error);
     }
   };
 
