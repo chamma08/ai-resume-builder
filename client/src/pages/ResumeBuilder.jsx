@@ -82,7 +82,20 @@ export default function ResumeBuilder() {
   }, []);
 
   const changeResumeVisibility = async () => {
-    setResumeData({ ...resumeData, public: !resumeData.public });
+    try {
+      const formData = new FormData();
+      formData.append("resumeId", resumeId);
+      formData.append("resumeData", JSON.stringify({ public: !resumeData.public }));
+      const { data } = await API.put("/api/resumes/update-resume", formData, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      setResumeData({ ...resumeData, public: !resumeData.public });
+      toast.success(data.message);
+    } catch (error) {
+      console.error("Error updating resume visibility:", error);
+    }
   };
 
   const downloadResume = () => {
