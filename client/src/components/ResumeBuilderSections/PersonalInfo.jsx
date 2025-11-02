@@ -40,34 +40,46 @@ export default function PersonalInfo({
   ];
 
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
+    <div className="w-full px-4 sm:px-6 lg:px-8 py-4 animate-slideUp">
       {/* Header Section */}
-      <div className="mb-6 sm:mb-8">
-        <h3 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 mb-2">
-          Personal Information
-        </h3>
-        <p className="text-sm sm:text-base text-gray-600">
-          Get Started with your personal information
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="p-2 bg-linear-to-br from-indigo-100 to-purple-100 rounded-lg">
+            <User className="size-6 text-indigo-600" />
+          </div>
+          <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Personal Information
+          </h3>
+        </div>
+        <p className="text-sm sm:text-base text-gray-600 ml-14">
+          Let's start with your basic details
         </p>
       </div>
 
       {/* Profile Image Upload Section */}
-      <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 mb-6 sm:mb-8 pb-6 border-b border-gray-200">
-        <label className="shrink-0">
+      <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 mb-6 sm:mb-8 pb-6 border-b border-gray-200 bg-linear-to-br from-blue-50/50 to-purple-50/50 rounded-2xl p-6">
+        <label className="shrink-0 group cursor-pointer">
           {data.image ? (
-            <img
-              src={
-                typeof data.image === "string"
-                  ? data.image
-                  : URL.createObjectURL(data.image)
-              }
-              alt="user-image"
-              className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 rounded-full object-cover ring-2 ring-slate-300 hover:opacity-70 transition-opacity cursor-pointer"
-            />
+            <div className="relative">
+              <img
+                src={
+                  typeof data.image === "string"
+                    ? data.image
+                    : URL.createObjectURL(data.image)
+                }
+                alt="user-image"
+                className="w-24 h-24 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full object-cover ring-4 ring-purple-300 group-hover:ring-purple-500 group-hover:opacity-80 transition-all duration-300 shadow-lg"
+              />
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <span className="bg-black/60 text-white text-xs px-3 py-1 rounded-full">Change</span>
+              </div>
+            </div>
           ) : (
-            <div className="inline-flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-slate-600 hover:text-slate-700 cursor-pointer transition-colors">
-              <User className="size-12 sm:size-14 lg:size-16 border-2 rounded-full p-2.5 sm:p-3" />
-              <span className="text-sm sm:text-base font-medium">
+            <div className="inline-flex flex-col items-center gap-3 text-slate-600 hover:text-slate-800 cursor-pointer transition-all duration-300 bg-white rounded-2xl p-6 shadow-md hover:shadow-lg border-2 border-dashed border-purple-300 hover:border-purple-500">
+              <div className="p-4 bg-linear-to-br from-purple-100 to-pink-100 rounded-full">
+                <User className="size-8 text-purple-600" />
+              </div>
+              <span className="text-sm font-semibold">
                 Upload Profile Picture
               </span>
             </div>
@@ -123,10 +135,9 @@ export default function PersonalInfo({
               
               <div className="flex flex-col gap-1 text-xs sm:text-sm text-gray-500 max-w-xs">
                 <p className="font-medium text-gray-600">Photo Tips:</p>
-                <ul className="list-disc list-inside space-y-0.5 text-gray-500">
+                <ul className=" space-y-0.5 text-gray-500">
                   <li>Use a professional headshot</li>
                   <li>Click Save Changes after uploading</li>
-                  <li>Good lighting recommended</li>
                 </ul>
               </div>
             </div>
@@ -160,7 +171,7 @@ export default function PersonalInfo({
                 type={field.type}
                 value={data[field.key] || ""}
                 onChange={(e) => handleChange(field.key, e.target.value)}
-                className="w-full px-3 py-2 sm:px-4 sm:py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm sm:text-base transition-all duration-200"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent text-sm sm:text-base transition-all duration-300 hover:border-purple-200"
                 required={field.required}
                 placeholder={`Enter your ${field.label.toLowerCase()}`}
               />
