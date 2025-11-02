@@ -1,6 +1,13 @@
-import { Briefcase, Plus, Sparkles, Trash2 } from "lucide-react";
+import { Briefcase, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import API from "../../configs/api";
+import { toast } from "react-toastify";
 
 export default function Experience({ data, onChange }) {
+  const { token } = useSelector((state) => state.auth);
+  const [isGenerating, setIsGenerating] = useState(false);
+
   const addExperience = () => {
     const newExperience = {
       company: "",
@@ -22,6 +29,31 @@ export default function Experience({ data, onChange }) {
     const updated = [...data];
     updated[index] = { ...updated[index], [field]: value };
     onChange(updated);
+  };
+
+  const generateJobDescription = async (index) => {
+    setIsGenerating(index);
+    const experience = data[index];
+    const prompt = `Generate a detailed job description for the following role:\nCompany: ${experience.company}\nPosition: ${experience.position}\nStart Date: ${experience.start_date}\nEnd Date: ${experience.end_date}\nResponsibilities and Achievements: ${experience.description}\n\nProvide a well-structured job description suitable for a resume.`;
+    try {
+      const response = await API.post(
+        "/api/ai/enhance-job-des",
+        { userContent: prompt },
+        { headers: { Authorization: token } }
+      );
+      const enhancedDescription = response.data.enhancedJobDescription;
+      if (enhancedDescription) {
+        updateExperience(index, "description", enhancedDescription);
+        toast.success("Job description enhanced successfully!");
+      } else {
+        toast.error("No enhanced description received.");
+      }
+    } catch (error) {
+      console.error("Error enhancing job description:", error);
+      toast.error("Failed to enhance job description.");
+    } finally {
+      setIsGenerating(-1);
+    }
   };
 
   return (
@@ -127,8 +159,20 @@ export default function Experience({ data, onChange }) {
                   <label className="text-sm font-medium text-gray-700">
                     Job Description
                   </label>
-                  <button className="flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50">
-                    <Sparkles className="w-3 h-3" />
+                  <button
+                    onClick={() => generateJobDescription(index)}
+                    disabled={
+                      isGenerating === index ||
+                      !experience.description ||
+                      !experience.position
+                    }
+                    className="flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50"
+                  >
+                    {isGenerating === index ? (
+                      <Loader2 className="size=4 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-3 h-3" />
+                    )}
                     Enhance with AI
                   </button>
                 </div>

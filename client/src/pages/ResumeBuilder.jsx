@@ -125,7 +125,7 @@ export default function ResumeBuilder() {
         },
       });
       setResumeData(data.resume);
-      toast.success(data.message);
+      /* toast.success(data.message); */
     } catch (error) {
       console.error("Error saving resume:", error);
       toast.error("Failed to save resume.");
