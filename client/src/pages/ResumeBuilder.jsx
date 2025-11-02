@@ -93,7 +93,7 @@ export default function ResumeBuilder() {
         },
       });
       setResumeData({ ...resumeData, public: !resumeData.public });
-      toast.success(data.message);
+      toast.success("Resume visibility Changed!");
     } catch (error) {
       console.error("Error updating resume visibility:", error);
     }
