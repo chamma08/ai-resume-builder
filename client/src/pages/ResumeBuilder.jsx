@@ -141,14 +141,14 @@ export default function ResumeBuilder() {
   };
   return (
     <div>
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      {/* <div className="max-w-7xl mx-auto px-4 py-6">
         <Link
           to="/app"
           className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-all"
         >
           <ArrowLeftIcon className="size-4" /> Back to Dashboard
         </Link>
-      </div>
+      </div> */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid lg:grid-cols-12 gap-8">
           {/* Left Side */}

@@ -153,7 +153,11 @@ export default function PersonalInfo({
             <div
               key={field.key}
               className={`space-y-2 ${
-                field.key === "full_name" || field.key === "profession"
+                field.key === "full_name" || 
+                field.key === "profession" || 
+                field.key === "email" || 
+                field.key === "address" || 
+                field.key === "website"
                   ? "md:col-span-2"
                   : ""
               }`}
