@@ -5,6 +5,7 @@ import { connectDB } from "./configs/db.js";
 import userRoutes from "./routes/userRoute.js";
 import resumeRoutes from "./routes/resumeRoute.js";
 import aiRouter from "./routes/aiRoute.js";
+import contactRoutes from "./routes/contactRoute.js";
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/resumes", resumeRoutes);
 
 app.use("/api/ai", aiRouter)
+app.use("/api/contact", contactRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
