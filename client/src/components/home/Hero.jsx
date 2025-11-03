@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 import logo from "../../assets/job_logo.png";
 import { useSelector } from "react-redux";
 
+import img1 from "../../assets/users/u1.png"
+import img2 from "../../assets/users/u2.jpg"
+
 export const Hero = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -148,12 +151,12 @@ export const Hero = () => {
           <div className="flex items-center mt-24">
             <div className="flex -space-x-3 pr-3">
               <img
-                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200"
+                src={img1}
                 alt="user3"
                 className="size-8 object-cover rounded-full border-2 border-white hover:-translate-y-0.5 transition z-1"
               />
               <img
-                src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200"
+                src={img2}
                 alt="user1"
                 className="size-8 object-cover rounded-full border-2 border-white hover:-translate-y-0.5 transition z-2"
               />
