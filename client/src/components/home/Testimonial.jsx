@@ -7,39 +7,63 @@ export default function Testimonial() {
       image:
         "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200",
       name: "Briar Martin",
-      handle: "@neilstellar",
+      handle: "@briarmartin",
+      testimonial:
+        "This AI Resume Builder helped me land my dream job! The AI-generated content was professional and perfectly tailored to my industry. Highly recommend!",
     },
     {
       image:
         "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200",
       name: "Avery Johnson",
       handle: "@averywrites",
+      testimonial:
+        "As a recent graduate, I struggled with resume writing. This tool made it so easy! The templates are modern and the AI suggestions saved me hours of work.",
     },
     {
       image:
         "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=200&auto=format&fit=crop&q=60",
       name: "Jordan Lee",
       handle: "@jordantalks",
+      testimonial:
+        "I've tried many resume builders, but this one stands out. The AI understands context and creates compelling summaries. Got 3 interview calls in a week!",
     },
     {
       image:
         "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=200&auto=format&fit=crop&q=60",
-      name: "Avery Johnson",
-      handle: "@averywrites",
+      name: "Marcus Chen",
+      handle: "@marcuscode",
+      testimonial:
+        "The template variety is impressive! As a software engineer, I needed something clean and professional. The modern template was perfect for showcasing my projects.",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&auto=format&fit=crop&q=60",
+      name: "Sarah Williams",
+      handle: "@sarahcareer",
+      testimonial:
+        "Career change was daunting until I found this tool. The AI helped me reframe my experience perfectly. Now I'm confident in my job search!",
+    },
+    {
+      image:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&auto=format&fit=crop&q=60",
+      name: "Alex Thompson",
+      handle: "@alexhires",
+      testimonial:
+        "As a hiring manager, I appreciate well-formatted resumes. This builder creates exactly what recruiters want to see. My colleagues love it too!",
     },
   ];
 
   const CreateCard = ({ card }) => (
-    <div className="p-4 rounded-lg mx-4 shadow hover:shadow-lg transition-all duration-200 w-72 shrink-0">
+    <div className="p-4 rounded-lg mx-4 shadow hover:shadow-lg transition-all duration-200 w-72 shrink-0 bg-white">
       <div className="flex gap-2">
         <img
-          className="size-11 rounded-full"
+          className="size-11 rounded-full object-cover"
           src={card.image}
           alt="User Image"
         />
         <div className="flex flex-col">
           <div className="flex items-center gap-1">
-            <p>{card.name}</p>
+            <p className="font-semibold text-gray-900">{card.name}</p>
             <svg
               className="mt-0.5 fill-blue-500"
               width="12"
@@ -57,8 +81,8 @@ export default function Testimonial() {
           <span className="text-xs text-slate-500">{card.handle}</span>
         </div>
       </div>
-      <p className="text-sm py-4 text-gray-800">
-        Radiant made undercutting all of our competitors an absolute breeze.
+      <p className="text-sm py-4 text-gray-700 leading-relaxed">
+        {card.testimonial}
       </p>
     </div>
   );
