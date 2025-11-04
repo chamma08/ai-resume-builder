@@ -1,194 +1,152 @@
 import logo from "../../assets/logo.png";
-import { Facebook, Instagram, Youtube, Linkedin } from "lucide-react";
+import { Facebook, Instagram, Youtube, Linkedin, Mail, Globe, ChevronRight } from "lucide-react";
 
 export default function Footer() {
   return (
-    <div className="bg-[#261F20] text-white mt-4">
-      {/* Header Section */}
-      <div className="container mx-auto px-6 py-6">
-        {" "}
-        {/* decreased py */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+    <footer className="bg-[#1a1414] text-white mt-8 relative overflow-hidden">
+      {/* Decorative Elements */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-red-600"></div>
+      <div className="absolute top-0 right-0 w-32 h-32 bg-red-600/5 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-40 h-40 bg-red-600/5 rounded-full blur-3xl"></div>
+
+      {/* Main Footer Content */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          
           {/* Logo and Description */}
-          <div className="md:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
-              <img src={logo} alt="Job Labs Logo" className="w-12 h-12" />
-              <h1 className="text-3xl font-bold">Job Labs</h1>
+          <div className="sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center gap-3 mb-6 group cursor-pointer">
+              <div className="relative">
+                <img 
+                  src={logo} 
+                  alt="Job Labs Logo" 
+                  className="w-14 h-14 transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" 
+                />
+                <div className="absolute inset-0 bg-red-600/20 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Job Labs</h1>
             </div>
 
-            <p className="text-base text-gray-300 leading-relaxed mb-6 line-clamp-7">
-              <span className="font-semibold text-white">
+            <p className="text-sm sm:text-base text-gray-400 leading-relaxed mb-6">
+              <span className="font-semibold text-white block mb-2">
                 Create Smart, ATS-Friendly Resumes.
-              </span>{" "}
-              Build and enhance your resume with AI-powered tools that highlight
-              your skills and help you stand out.
-              <span className="font-semibold text-white">
+              </span>
+              Build and enhance your resume with AI-powered tools that highlight your skills and help you stand out.
+              <span className="font-semibold text-red-400 block mt-2">
                 Job Labs – where your resume meets innovation.
               </span>
             </p>
 
             {/* Social Media Icons */}
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-3">
               <a
                 href="#"
-                className="w-10 h-10 rounded-full border-2 border-gray-500 flex items-center justify-center hover:border-white transition"
+                className="w-11 h-11 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-600 hover:border-red-600 hover:scale-110 transition-all duration-300 group"
+                aria-label="Facebook"
               >
-                <Facebook className="w-5 h-5" />
+                <Facebook className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 rounded-full border-2 border-gray-500 flex items-center justify-center hover:border-white transition"
+                className="w-11 h-11 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-600 hover:border-red-600 hover:scale-110 transition-all duration-300 group"
+                aria-label="Instagram"
               >
-                <Instagram className="w-5 h-5" />
+                <Instagram className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 rounded-full border-2 border-gray-500 flex items-center justify-center hover:border-white transition"
+                className="w-11 h-11 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-600 hover:border-red-600 hover:scale-110 transition-all duration-300 group"
+                aria-label="Youtube"
               >
-                <Youtube className="w-5 h-5" />
+                <Youtube className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 rounded-full border-2 border-gray-500 flex items-center justify-center hover:border-white transition"
+                className="w-11 h-11 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-600 hover:border-red-600 hover:scale-110 transition-all duration-300 group"
+                aria-label="LinkedIn"
               >
-                <Linkedin className="w-5 h-5" />
+                <Linkedin className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
               </a>
             </div>
           </div>
 
           {/* Job Sectors */}
-          <div>
-            <h2 className="text-2xl font-bold mb-6">Job Sectors</h2>
+          <div className="space-y-4">
+            <h2 className="text-xl sm:text-2xl font-bold mb-6 text-white relative inline-block">
+              Job Sectors
+              <span className="absolute bottom-0 left-0 w-12 h-1 bg-red-600 rounded-full"></span>
+            </h2>
             <ul className="space-y-3">
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition text-base"
-                >
-                  Retail Jobs
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition text-base"
-                >
-                  Healthcare Jobs
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition text-base"
-                >
-                  Security Jobs
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition text-base"
-                >
-                  Drivers & Receptionists
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition text-base"
-                >
-                  Professional Roles
-                </a>
-              </li>
+              {['Retail Jobs', 'Healthcare Jobs', 'Security Jobs', 'Drivers & Receptionists', 'Professional Roles'].map((item, index) => (
+                <li key={index} className="group">
+                  <a
+                    href="#"
+                    className="text-sm sm:text-base text-gray-400 hover:text-white transition-all duration-300 flex items-center gap-2"
+                  >
+                    <ChevronRight className="w-4 h-4 text-red-600 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                    <span className="group-hover:translate-x-1 transition-transform duration-300">{item}</span>
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Quick Links */}
-          <div>
-            <h2 className="text-2xl font-bold mb-6">Quick Links</h2>
+          <div className="space-y-4">
+            <h2 className="text-xl sm:text-2xl font-bold mb-6 text-white relative inline-block">
+              Quick Links
+              <span className="absolute bottom-0 left-0 w-12 h-1 bg-red-600 rounded-full"></span>
+            </h2>
             <ul className="space-y-3">
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition text-base"
-                >
-                  Home
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition text-base"
-                >
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition text-base"
-                >
-                  Services
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition text-base"
-                >
-                  Sign Up
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-white transition text-base"
-                >
-                  Login
-                </a>
-              </li>
+              {['Home', 'About Us', 'Services', 'Sign Up', 'Login'].map((item, index) => (
+                <li key={index} className="group">
+                  <a
+                    href="#"
+                    className="text-sm sm:text-base text-gray-400 hover:text-white transition-all duration-300 flex items-center gap-2"
+                  >
+                    <ChevronRight className="w-4 h-4 text-red-600 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                    <span className="group-hover:translate-x-1 transition-transform duration-300">{item}</span>
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Contact Info */}
-          <div>
-            <h2 className="text-2xl font-bold mb-6">Contact Info</h2>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <svg
-                  className="w-6 h-6 text-white mt-0.5 shrink-0"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                </svg>
+          <div className="space-y-4">
+            <h2 className="text-xl sm:text-2xl font-bold mb-6 text-white relative inline-block">
+              Contact Info
+              <span className="absolute bottom-0 left-0 w-12 h-1 bg-red-600 rounded-full"></span>
+            </h2>
+            <ul className="space-y-5">
+              <li className="group">
                 <a
                   href="mailto:Enquiries@job-labs.lk"
-                  className="text-gray-300 hover:text-white transition text-base"
+                  className="flex items-start gap-3 text-sm sm:text-base text-gray-400 hover:text-white transition-all duration-300"
                 >
-                  Enquiries@job-labs.lk
+                  <div className="w-11 h-11 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-red-600 group-hover:border-red-600 transition-all duration-300">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <div className="pt-2">
+                    <span className="block text-xs text-gray-500 mb-1">Email Us</span>
+                    <span className="group-hover:text-red-400 break-all">Enquiries@job-labs.lk</span>
+                  </div>
                 </a>
               </li>
-              <li className="flex items-start gap-3">
-                <svg
-                  className="w-6 h-6 text-white mt-0.5 shrink-0"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118A6.004 6.004 0 004.083 9zM10 2a8 8 0 100 16 8 8 0 000-16zm0 2c-.076 0-.232.032-.465.262-.238.234-.497.623-.737 1.182-.389.907-.673 2.142-.766 3.556h3.936c-.093-1.414-.377-2.649-.766-3.556-.24-.56-.5-.948-.737-1.182C10.232 4.032 10.076 4 10 4zm3.971 5c-.089-1.546-.383-2.97-.837-4.118A6.004 6.004 0 0115.917 9h-1.946zm-2.003 2H8.032c.093 1.414.377 2.649.766 3.556.24.56.5.948.737 1.182.233.23.389.262.465.262.076 0 .232-.032.465-.262.238-.234.498-.623.737-1.182.389-.907.673-2.142.766-3.556zm1.166 4.118c.454-1.147.748-2.572.837-4.118h1.946a6.004 6.004 0 01-2.783 4.118zm-6.268 0C6.412 13.97 6.118 12.546 6.03 11H4.083a6.004 6.004 0 002.783 4.118z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+              <li className="group">
                 <a
                   href="https://www.job-labs.lk"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-300 hover:text-white transition text-base"
+                  className="flex items-start gap-3 text-sm sm:text-base text-gray-400 hover:text-white transition-all duration-300"
                 >
-                  www.job-labs.lk
+                  <div className="w-11 h-11 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shrink-0 group-hover:bg-red-600 group-hover:border-red-600 transition-all duration-300">
+                    <Globe className="w-5 h-5" />
+                  </div>
+                  <div className="pt-2">
+                    <span className="block text-xs text-gray-500 mb-1">Visit Website</span>
+                    <span className="group-hover:text-red-400 break-all">www.job-labs.lk</span>
+                  </div>
                 </a>
               </li>
             </ul>
@@ -196,27 +154,44 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Footer Bar */}
-      <div className="bg-red-800 py-3">
-        {" "}
-        {/* decreased from py-5 */}
-        <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm mb-2 md:mb-0">
-            © 2025 Job Labs. All rights reserved.
-          </p>
-          <div className="flex gap-6 text-sm">
-            <a href="#" className="hover:text-gray-300 transition">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-gray-300 transition">
-              Terms of Service
-            </a>
-            <a href="#" className="hover:text-gray-300 transition">
-              Cookie Policy
-            </a>
+      {/* Divider */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="h-px bg-white/10"></div>
+      </div>
+
+      {/* Footer Bottom Bar */}
+      <div className="bg-[#0f0a0b]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-xs sm:text-sm text-gray-400 text-center md:text-left">
+              © 2025 <span className="text-gray-400">Job Labs</span>. All Rights Reserved.
+            </p>
+            <div className="flex flex-wrap justify-center md:justify-end gap-4 sm:gap-6 text-xs sm:text-sm">
+              <a 
+                href="#" 
+                className="text-gray-400 hover:text-red-400 transition-colors duration-300 relative group"
+              >
+                Privacy Policy
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 group-hover:w-full transition-all duration-300"></span>
+              </a>
+              <a 
+                href="#" 
+                className="text-gray-400 hover:text-red-400 transition-colors duration-300 relative group"
+              >
+                Terms of Service
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 group-hover:w-full transition-all duration-300"></span>
+              </a>
+              <a 
+                href="#" 
+                className="text-gray-400 hover:text-red-400 transition-colors duration-300 relative group"
+              >
+                Cookie Policy
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 group-hover:w-full transition-all duration-300"></span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </footer>
   );
 }
