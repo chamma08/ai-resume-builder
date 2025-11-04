@@ -2,9 +2,9 @@ import { Home, Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import s1 from '../assets/s2.jpg';
 import logo from '../assets/job_logo.png';
 import API from "../configs/api";
+import r2 from '../assets/r2.jpg';
 
 export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
@@ -185,7 +185,7 @@ export default function ResetPassword() {
         <div
           className="hidden md:flex md:w-1/2 bg-cover bg-center p-8 lg:p-10 text-white relative min-h-[300px] md:min-h-0"
           style={{ 
-            backgroundImage: `url(${s1})`,
+            backgroundImage: `url(${r2})`,
             backgroundPosition: 'center'
           }}
         >
@@ -294,7 +294,6 @@ export default function ResetPassword() {
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={!otpVerified}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors disabled:opacity-50"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -326,7 +325,6 @@ export default function ResetPassword() {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   disabled={!otpVerified}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors disabled:opacity-50"
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
