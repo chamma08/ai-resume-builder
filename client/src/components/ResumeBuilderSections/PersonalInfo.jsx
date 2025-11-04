@@ -157,7 +157,8 @@ export default function PersonalInfo({
                 field.key === "profession" || 
                 field.key === "email" || 
                 field.key === "address" || 
-                field.key === "website"
+                field.key === "website" ||
+                field.key === "linkedin"
                   ? "md:col-span-2"
                   : ""
               }`}
