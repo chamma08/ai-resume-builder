@@ -28,7 +28,14 @@ export default function TemplateSelector({ selectedTemplate, onChange }) {
       name: "Minimalist",
       preview:
         "A very clean and simple layout with plenty of white space and minimal design elements",
-    },
+    },        
+    {
+      id: "elegant",
+      name: "Elegant",
+      preview:
+        "Sophisticated design with refined typography and subtle color accents",
+    }
+    
   ];
   return (
     <div className="relative">
