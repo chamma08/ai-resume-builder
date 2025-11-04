@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import s1 from '../assets/s2.jpg';
 import logo from '../assets/job_logo.png';
 import API from "../configs/api";
+import r1 from '../assets/r1.jpg';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -74,7 +75,7 @@ export default function ForgotPassword() {
         <div
           className="hidden md:flex md:w-1/2 bg-cover bg-center p-8 lg:p-10 text-white relative min-h-[300px] md:min-h-0"
           style={{ 
-            backgroundImage: `url(${s1})`,
+            backgroundImage: `url(${r1})`,
             backgroundPosition: 'center'
           }}
         >
