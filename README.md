@@ -9,7 +9,7 @@ A modern, full-stack MERN application that helps users create professional resum
 
 ## ✨ Features
 
-- 🤖 **AI-Powered Content Enhancement** - Leverage OpenAI to enhance professional summaries, experience descriptions, and skills
+- 🤖 **AI-Powered Content Enhancement** - Leverage OpenAI GPT-4o-mini to enhance professional summaries, experience descriptions, and skills
 - 📄 **Multiple Professional Templates** - Choose from 6 beautifully designed resume templates:
   - Classic Template
   - Modern Template
@@ -19,36 +19,42 @@ A modern, full-stack MERN application that helps users create professional resum
   - Corporate Template
 - 🎨 **Customizable Color Themes** - Personalize your resume with custom color schemes
 - 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile devices
-- 👤 **User Authentication** - Secure JWT-based authentication system
+- 👤 **User Authentication** - Secure JWT-based authentication system with password reset
+- 🔐 **Password Recovery** - OTP-based password reset via email
 - 💾 **Save & Manage Resumes** - Create, save, and manage multiple resumes
 - 📸 **Image Upload** - Add profile pictures with ImageKit integration
 - 📥 **Export to PDF** - Download your resume as a PDF file
 - 🔍 **Live Preview** - Real-time preview of your resume as you edit
 - 🎯 **ATS-Friendly** - Templates optimized for Applicant Tracking Systems
+- 📧 **Contact Form** - Email-based contact system with auto-responses
+- 🎭 **Beautiful Animations** - Smooth page transitions and interactive elements
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **React 19.1.1** - Modern UI library
-- **Vite** - Fast build tool and dev server
-- **Redux Toolkit** - State management
-- **React Router DOM** - Client-side routing
-- **Tailwind CSS 4** - Utility-first CSS framework
-- **Framer Motion** - Smooth animations
-- **Lucide React** - Beautiful icon set
-- **React Toastify** - Toast notifications
-- **Axios** - HTTP client
+- **React 19.1.1** - Latest React with modern features
+- **Vite 7.1.7** - Lightning-fast build tool and dev server
+- **Redux Toolkit 2.9.2** - State management
+- **React Router DOM 7.9.4** - Client-side routing
+- **Tailwind CSS 4.1.16** - Modern utility-first CSS framework
+- **Framer Motion 12.23.24** - Advanced animations and transitions
+- **Lucide React 0.548.0** - Beautiful icon library
+- **React Toastify 11.0.5** - Toast notifications
+- **Axios 1.13.1** - HTTP client
+- **React Icons 5.5.0** - Additional icon sets
 
 ### Backend
 - **Node.js** - JavaScript runtime
-- **Express.js 5** - Web application framework
+- **Express.js 5.1.0** - Modern web application framework
 - **MongoDB** - NoSQL database
-- **Mongoose** - MongoDB object modeling
-- **OpenAI API** - AI content enhancement
+- **Mongoose 8.19.2** - MongoDB object modeling
+- **OpenAI API (GPT-4o-mini)** - AI content enhancement
 - **JWT** - JSON Web Tokens for authentication
-- **Bcrypt** - Password hashing
+- **Bcrypt 6.0.0** - Secure password hashing
 - **ImageKit** - Image hosting and optimization
-- **Multer** - File upload handling
+- **Multer 2.0.2** - File upload handling
+- **Nodemailer 7.0.10** - Email service for notifications
+- **Compression** - Response compression middleware
 
 ## 📋 Prerequisites
 
@@ -56,8 +62,9 @@ Before you begin, ensure you have the following installed:
 - **Node.js** (v16 or higher)
 - **npm** or **yarn**
 - **MongoDB** (local or Atlas)
-- **OpenAI API Key**
+- **OpenAI API Key** (for AI features)
 - **ImageKit Account** (for image uploads)
+- **Email Account** (Gmail/Outlook/Yahoo for email features)
 
 ## 🚀 Getting Started
 
@@ -106,6 +113,17 @@ OPENAI_MODEL_NAME=gpt-4o-mini
 IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
 IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
 IMAGEKIT_URL_ENDPOINT=your_imagekit_url_endpoint
+
+# Email Configuration (for contact form and password reset)
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_specific_password
+ADMIN_EMAIL=admin@yourdomain.com
+
+# Note: For Gmail, you need to generate an App Password
+# 1. Enable 2-Step Verification in your Google Account
+# 2. Go to Security > App passwords
+# 3. Generate a new app password for "Mail"
+# 4. Use this app password in EMAIL_PASS
 ```
 
 #### Client Environment Variables
@@ -131,7 +149,46 @@ npm run dev
 ```
 The client will run on `http://localhost:5173`
 
-## 📁 Project Structure
+### 5. Email Configuration (Important)
+
+The application uses email for:
+- Contact form submissions
+- Password reset OTP delivery
+- Account notifications
+
+#### Gmail Setup (Recommended)
+1. Enable 2-Step Verification in your Google Account
+2. Go to **Security** > **App passwords**
+3. Generate a new app password for "Mail"
+4. Use this app password in `EMAIL_PASS` environment variable
+
+#### Alternative Email Providers
+The application also supports:
+- **Outlook/Hotmail**: Modify `server/configs/email.js` to use Outlook settings
+- **Yahoo**: Modify `server/configs/email.js` to use Yahoo settings
+
+**Note**: If you don't configure email, the application will still work, but password reset and contact form features will be disabled.
+
+## � Troubleshooting
+
+### Email Issues
+- **"Email configuration error"**: Make sure you've set up `EMAIL_USER` and `EMAIL_PASS` in your `.env` file
+- **Gmail authentication failed**: Ensure you're using an App Password, not your regular password
+- **OTP not received**: Check spam folder or verify your email configuration
+
+### Database Connection
+- **MongoDB connection failed**: Verify your `MONGODB_URI` is correct
+- **Connection timeout**: Check your network and MongoDB Atlas whitelist settings
+
+### OpenAI API
+- **AI features not working**: Verify your `OPENAI_API_KEY` is valid and has credits
+- **Rate limit exceeded**: You've exceeded your OpenAI API quota, check your usage
+
+### Build Issues
+- **Module not found**: Run `npm install` in both client and server directories
+- **Port already in use**: Change the port in `.env` file or stop the process using that port
+
+## �📁 Project Structure
 
 ```
 ai-resume-builder/
@@ -155,19 +212,22 @@ ai-resume-builder/
 │   ├── configs/          # Configuration files
 │   │   ├── ai.js         # OpenAI configuration
 │   │   ├── db.js         # MongoDB connection
+│   │   ├── email.js      # Nodemailer configuration
 │   │   ├── imageKit.js   # ImageKit configuration
 │   │   └── multer.js     # File upload configuration
 │   ├── controllers/      # Route controllers
 │   │   ├── aiController.js       # AI enhancement logic
+│   │   ├── contactController.js  # Contact form handler
 │   │   ├── resumeController.js   # Resume CRUD operations
-│   │   └── userController.js     # User authentication
+│   │   └── userController.js     # User authentication & password reset
 │   ├── middlewares/      # Custom middlewares
 │   │   └── authMiddleware.js     # JWT verification
 │   ├── models/           # MongoDB schemas
 │   │   ├── Resume.js     # Resume model
-│   │   └── User.js       # User model
+│   │   └── User.js       # User model with password reset fields
 │   ├── routes/           # API routes
 │   │   ├── aiRoute.js
+│   │   ├── contactRoute.js
 │   │   ├── resumeRoute.js
 │   │   └── userRoute.js
 │   ├── uploads/          # Uploaded files storage
@@ -180,11 +240,27 @@ ai-resume-builder/
 ## 🔑 Key Features Explained
 
 ### AI Content Enhancement
-The application uses OpenAI's GPT models to enhance various sections of your resume:
+The application uses OpenAI's GPT-4o-mini model to enhance various sections of your resume:
 - **Professional Summary**: Generate compelling summaries based on your experience
 - **Experience Descriptions**: Improve job descriptions with action verbs and achievements
 - **Skills**: Suggest relevant skills based on your profile
 - **Project Descriptions**: Enhance project descriptions for better impact
+
+### Password Reset System
+Secure OTP-based password recovery:
+- Generate 6-digit OTP codes
+- 10-minute expiry for security
+- Email delivery with professional templates
+- Verification step before password change
+- Confirmation email after successful reset
+
+### Email System
+Integrated email functionality using Nodemailer:
+- **Contact Form**: Receive messages from visitors
+- **Auto-responses**: Automatic confirmation emails to users
+- **Password Reset**: OTP delivery and confirmation emails
+- **Professional Templates**: Beautiful HTML email designs
+- **Multiple Provider Support**: Gmail, Outlook, Yahoo
 
 ### Resume Templates
 Choose from 6 professionally designed templates, each optimized for different industries and preferences:
@@ -201,15 +277,19 @@ Choose from 6 professionally designed templates, each optimized for different in
 - Edit existing resumes
 - Delete unwanted resumes
 - Quick preview and download
+- Profile management with image upload
 
 ## 🔒 Security Features
 
-- Password hashing with Bcrypt
-- JWT-based authentication
-- Protected API routes
-- Secure file upload handling
+- Password hashing with Bcrypt 6.0.0
+- JWT-based authentication with 7-day expiry
+- Protected API routes with authentication middleware
+- Secure file upload handling with Multer
 - Environment variable protection
-- CORS configuration
+- CORS configuration for cross-origin requests
+- OTP-based password reset with 10-minute expiry
+- Email verification for password changes
+- Secure token generation with crypto module
 
 ## 🎨 UI/UX Features
 
@@ -223,9 +303,12 @@ Choose from 6 professionally designed templates, each optimized for different in
 ## 📚 API Endpoints
 
 ### Authentication
-- `POST /api/users/register` - Register new user
-- `POST /api/users/login` - User login
-- `GET /api/users/get-user` - Get authenticated user
+- `POST /api/users/sign-up` - Register new user
+- `POST /api/users/sign-in` - User login
+- `POST /api/users/forgot-password` - Request password reset OTP
+- `POST /api/users/verify-otp` - Verify OTP code
+- `POST /api/users/reset-password` - Reset password with OTP
+- `GET /api/users/get-user` - Get authenticated user profile
 
 ### Resume Management
 - `GET /api/resumes` - Get all user resumes
@@ -238,6 +321,9 @@ Choose from 6 professionally designed templates, each optimized for different in
 - `POST /api/ai/enhance-summary` - Enhance professional summary
 - `POST /api/ai/enhance-experience` - Enhance experience descriptions
 - `POST /api/ai/suggest-skills` - Get skill suggestions
+
+### Contact
+- `POST /api/contact/send` - Send contact form email
 
 ## 🤝 Contributing
 
@@ -271,16 +357,54 @@ If you have any questions or need help, please:
 - Open an issue on GitHub
 - Contact via GitHub profile
 
+## 📝 Changelog
+
+### Version 2.0.0 (Latest)
+**New Features:**
+- ✨ Added OTP-based password reset functionality
+- 📧 Integrated Nodemailer for email services
+- 📮 Contact form with email notifications
+- 🎨 Professional HTML email templates
+- 🔐 Enhanced security with crypto-based OTP generation
+- 📱 Email support for Gmail, Outlook, and Yahoo
+
+**Updates:**
+- ⬆️ Upgraded to React 19.1.1
+- ⬆️ Upgraded to Express.js 5.1.0
+- ⬆️ Upgraded to Tailwind CSS 4.1.16
+- ⬆️ Updated all dependencies to latest versions
+- 🚀 Improved performance with compression middleware
+- 🎭 Enhanced UI animations with Framer Motion 12.23.24
+
+**Improvements:**
+- 🛡️ Better error handling for email services
+- 📋 Extended User model with password reset fields
+- 🔄 Added verification step for OTP validation
+- 💌 Auto-response emails for contact form submissions
+- 🎨 Improved email template designs
+
+### Version 1.0.0
+- 🎉 Initial release
+- 🤖 AI-powered resume enhancement
+- 📄 6 professional resume templates
+- 👤 User authentication system
+- 💾 Resume management dashboard
+- 📸 Image upload functionality
+
 ## 🎯 Future Enhancements
 
 - [ ] LinkedIn profile import
-- [ ] Cover letter generator
+- [ ] Cover letter generator with AI
 - [ ] More template options
 - [ ] Multi-language support
-- [ ] Resume scoring and suggestions
+- [ ] Resume scoring and ATS optimization suggestions
 - [ ] Export to Word format
 - [ ] Social media integration
 - [ ] Collaborative editing
+- [ ] Resume analytics and insights
+- [ ] Two-factor authentication
+- [ ] Dark mode support
+- [ ] Resume version history
 
 ---
 
