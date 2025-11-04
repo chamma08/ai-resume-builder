@@ -34,6 +34,18 @@ export default function TemplateSelector({ selectedTemplate, onChange }) {
       name: "Elegant",
       preview:
         "Sophisticated design with refined typography and subtle color accents",
+    },
+    {
+      id: "ats",
+      name: "Professional Pro",
+      preview:
+        "Stand out to recruiters with this clean, scanner-friendly format that beats automated systems while maintaining visual appeal",
+    },
+    {
+      id: "ats-image",
+      name: "Executive Profile",
+      preview:
+        "Make a lasting impression with your photo while ensuring perfect compatibility with hiring software and tracking systems",
     }
     
   ];

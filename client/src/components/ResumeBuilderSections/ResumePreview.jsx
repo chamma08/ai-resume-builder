@@ -5,6 +5,7 @@ import MinimalImageTemplate from "../templates/MinimalImageTemplate";
 import MinimalTemplate from "../templates/MinimalTemplate";
 import ElegantTemplate from "../templates/ElegantTemplate";
 import ATSTemplate from "../templates/ATSTemplate";
+import ATSImageTemplate from "../templates/ATSImageTemplate";
 
 export default function ResumePreview({
   data,
@@ -24,7 +25,13 @@ export default function ResumePreview({
         return <MinimalImageTemplate data={data} accentColor={accentColor} />;
 
       case "elegant":
+        return <ElegantTemplate data={data} accentColor={accentColor} />;
+
+      case "ats":
         return <ATSTemplate data={data} accentColor={accentColor} />;
+
+      case "ats-image":
+        return <ATSImageTemplate data={data} accentColor={accentColor} />;
 
       /* case "corporate":
             return <CorporateTemplate data={data} accentColor={accentColor} />; */
