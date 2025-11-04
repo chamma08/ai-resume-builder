@@ -1,4 +1,8 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+
+// Ensure environment variables are loaded
+dotenv.config();
 
 // OPTION 1: Gmail with explicit SMTP settings (Current)
 const transporter = nodemailer.createTransport({
@@ -42,7 +46,8 @@ const transporter = nodemailer.createTransport({
 // Verify transporter configuration
 transporter.verify((error, success) => {
   if (error) {
-    console.log('Email configuration error:', error);
+    console.log('⚠️  Email configuration error:', error.message);
+    console.log('📧 Email features may not work. Please check your EMAIL_USER and EMAIL_PASS in .env file');
   } else {
     console.log('✅ Email server is ready to send messages');
   }
