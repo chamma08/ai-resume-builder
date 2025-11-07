@@ -154,14 +154,14 @@ const ATSTemplate = ({ data, accentColor }) => {
                         Skills
                     </h2>
 
-                    <div className="space-y-2">
-                        {data.skills.map((skillCategory, index) => (
-                            <div key={index}>
-                                <p className="text-gray-700 text-sm">
-                                    <span className="font-semibold">{skillCategory.category}:</span>{" "}
-                                    {skillCategory.items.join(", ")}
-                                </p>
-                            </div>
+                    <div className="flex flex-wrap gap-2">
+                        {data.skills.map((skill, index) => (
+                            <span
+                                key={index}
+                                className="text-gray-700 text-sm"
+                            >
+                                {skill}{index < data.skills.length - 1 ? " •" : ""}
+                            </span>
                         ))}
                     </div>
                 </section>
