@@ -9,13 +9,15 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import API from "../configs/api";
 import { toast } from "react-toastify";
 import pdfTotext from "react-pdftotext";
+import { awardPoints } from "../redux/features/pointsSlice";
 
 export default function Dashboard() {
   const { user, token } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
   const colors = [
     "indigo",
@@ -69,6 +71,24 @@ export default function Dashboard() {
       setAllResumes([...allResumes, data.resume]);
       setTitle("");
       setShowCreateResume(false);
+      
+      // Check if this is the first resume
+      const isFirstResume = allResumes.length === 0;
+      
+      // Award points for creating a resume
+      try {
+        await dispatch(awardPoints({ 
+          activityType: 'RESUME_CREATED',
+          metadata: { 
+            resumeId: data.resume._id,
+            isFirst: isFirstResume 
+          }
+        })).unwrap();
+      } catch (pointsError) {
+        console.error("Error awarding points:", pointsError);
+        // Don't block resume creation if points award fails
+      }
+      
       toast.success("Resume created successfully!", {
         position: "top-right",
         autoClose: 3000,
@@ -97,6 +117,25 @@ export default function Dashboard() {
       setTitle("");
       setResume(null);
       setShowUploadResume(false);
+      
+      // Check if this is the first resume
+      const isFirstResume = allResumes.length === 0;
+      
+      // Award points for creating a resume (via upload)
+      try {
+        await dispatch(awardPoints({ 
+          activityType: 'RESUME_CREATED',
+          metadata: { 
+            resumeId: data.resumeId,
+            isFirst: isFirstResume,
+            uploadedFromPDF: true
+          }
+        })).unwrap();
+      } catch (pointsError) {
+        console.error("Error awarding points:", pointsError);
+        // Don't block resume upload if points award fails
+      }
+      
       toast.success("Resume uploaded successfully!", {
         position: "top-right",
         autoClose: 3000,
