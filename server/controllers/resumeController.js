@@ -94,10 +94,16 @@ export const updateResume = async (req, res) => {
     if (image) {
       try {
         const imageBufferDate = fs.readFileSync(image.path);
+        
+        // Extract file extension from original filename
+        const fileExtension = image.originalname.split('.').pop().toLowerCase();
+        // Support all common image formats
+        const supportedFormats = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'];
+        const finalExtension = supportedFormats.includes(fileExtension) ? fileExtension : 'jpg';
 
         const response = await imagekit.upload({
           file: imageBufferDate,
-          fileName: `resume_${Date.now()}.png`,
+          fileName: `resume_${Date.now()}.${finalExtension}`,
           folder: "/user-resumes",
           transformation: {
             pre:

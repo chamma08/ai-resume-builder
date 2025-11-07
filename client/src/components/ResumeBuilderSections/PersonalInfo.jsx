@@ -86,7 +86,7 @@ export default function PersonalInfo({
           )}
           <input
             type="file"
-            accept="image/jpg, image/png, image/jpeg"
+            accept="image/jpg, image/png, image/jpeg, image/webp, image/gif, image/bmp"
             onChange={(e) => handleChange("image", e.target.files[0])}
             className="hidden"
           />
@@ -127,7 +127,7 @@ export default function PersonalInfo({
                 <span className="text-sm font-medium">Change Photo</span>
                 <input
                   type="file"
-                  accept="image/jpg, image/png, image/jpeg"
+                  accept="image/jpg, image/png, image/jpeg, image/webp, image/gif, image/bmp"
                   onChange={(e) => handleChange("image", e.target.files[0])}
                   className="hidden"
                 />
