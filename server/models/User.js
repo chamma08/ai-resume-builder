@@ -88,11 +88,11 @@ UserSchema.methods.comparePassword = function (password) {
 
 UserSchema.virtual("nextLevelPoints").get(function () {
   const levels = {
-    bronze: 100,
-    silver: 300,
-    gold: 600,
-    platinum: 1000,
-    diamond: Infinity,
+    Bronze: 100,
+    Silver: 300,
+    Gold: 600,
+    Platinum: 1000,
+    Diamond: Infinity,
   };
   return levels[this.level] || 0;
 });
@@ -102,25 +102,18 @@ UserSchema.methods.addPoints = async function (points, activity) {
 
   const oldLevel = this.level;
   if (this.points >= 1000) {
-    this.level = "platinum";
+    this.level = "Diamond";   
   } else if (this.points >= 600) {
-    this.level = "gold";
+    this.level = "Platinum";  
   } else if (this.points >= 300) {
-    this.level = "silver";
+    this.level = "Gold";      
   } else if (this.points >= 100) {
-    this.level = "bronze";
+    this.level = "Silver";    
   } else {
-    this.level = "bronze";
-  }
-
-  if (oldLevel !== this.level) {
-    console.log(
-      `User ${this._id} leveled up from ${oldLevel} to ${this.level}`
-    );
+    this.level = "Bronze";    
   }
 
   const leveledUp = oldLevel !== this.level;
-
   await this.save();
 
   return { leveledUp, newLevel: this.level, totalPoints: this.points };
