@@ -15,7 +15,7 @@ const POINT_VALUES = {
 export const getUserPoints = async (req, res) => {
   try {
     const user = await User.findById(req.userId).select(
-      "points level badges stats socialShares referralCode"
+      "points level badges stats socialMediaFollows referralCode" // Changed from socialShares
     );
 
     if (!user) {
@@ -24,9 +24,9 @@ export const getUserPoints = async (req, res) => {
 
     const levels = {
       'Bronze': 100,
-      'Silver': 500,
-      'Gold': 1500,
-      'Platinum': 3000,
+      'Silver': 300,
+      'Gold': 600,
+      'Platinum': 1000,
       'Diamond': Infinity,
     };
 
@@ -34,14 +34,14 @@ export const getUserPoints = async (req, res) => {
     const progress =
       nextLevelPoints === Infinity
         ? 100
-        : ((user.points % nextLevelPoints) / nextLevelPoints) * 100;
+        : ((user.points / nextLevelPoints) * 100); // Fixed calculation
 
     return res.status(200).json({
       points: user.points,
       level: user.level,
       badges: user.badges,
       stats: user.stats,
-      socialShares: user.socialShares,
+      socialMediaFollows: user.socialMediaFollows, // Changed from socialShares
       referralCode: user.referralCode,
       progressToNextLevel: progress,
     });

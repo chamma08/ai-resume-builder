@@ -15,6 +15,11 @@ import Dashboard from "./pages/Dashboard";
 import ResumeBuilder from "./pages/ResumeBuilder";
 import LoadingScreen from "./components/LoadingScreen";
 import API from "./configs/api";
+import PointsDashboard from "./pages/PointsDashboard";
+import Leaderboard from "./pages/Leaderboard";
+import ActivityHistory from "./pages/ActivityHistory";
+import ReferralPage from "./pages/ReferralPage";
+
 
 function App() {
   const dispatch = useDispatch();
@@ -60,6 +65,10 @@ function App() {
         <Route path="app" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="builder/:resumeId" element={<ResumeBuilder />} />
+          <Route path="points" element={<PointsDashboard />} />
+          <Route path="leaderboard" element={<Leaderboard />} />
+          <Route path="activity" element={<ActivityHistory />} />
+          <Route path="referral" element={<ReferralPage />} />
         </Route>
 
         <Route path="view/:resumeId" element={<Preview />} />
