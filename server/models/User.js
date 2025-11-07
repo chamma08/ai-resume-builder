@@ -31,8 +31,8 @@ const UserSchema = new mongoose.Schema(
     },
     level: {
       type: String,
-      enum: ["bronze", "silver", "gold", "platinum", "diamond"],
-      default: "bronze",
+      enum: ["Bronze", "Silver", "Gold", "Platinum", "Diamond"],
+      default: "Bronze",
     },
     badges: [
       {
@@ -114,7 +114,9 @@ UserSchema.methods.addPoints = async function (points, activity) {
   }
 
   if (oldLevel !== this.level) {
-    console.log(`User ${this._id} leveled up from ${oldLevel} to ${this.level}`);
+    console.log(
+      `User ${this._id} leveled up from ${oldLevel} to ${this.level}`
+    );
   }
 
   const leveledUp = oldLevel !== this.level;
@@ -124,11 +126,12 @@ UserSchema.methods.addPoints = async function (points, activity) {
   return { leveledUp, newLevel: this.level, totalPoints: this.points };
 };
 
-UserSchema.methods.generateReferralCode = function() {
-    const code = this.name.substring(0, 3).toUpperCase() + 
-                 Math.random().toString(36).substring(2, 8).toUpperCase();
-    this.referralCode = code;
-    return code;
+UserSchema.methods.generateReferralCode = function () {
+  const code =
+    this.name.substring(0, 3).toUpperCase() +
+    Math.random().toString(36).substring(2, 8).toUpperCase();
+  this.referralCode = code;
+  return code;
 };
 
 const User = mongoose.model("User", UserSchema);
