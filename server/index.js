@@ -9,6 +9,7 @@ import userRoutes from "./routes/userRoute.js";
 import resumeRoutes from "./routes/resumeRoute.js";
 import aiRouter from "./routes/aiRoute.js";
 import contactRoutes from "./routes/contactRoute.js";
+import pointsRoutes from "./routes/pointsRoute.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,8 @@ app.use("/api/resumes", resumeRoutes);
 
 app.use("/api/ai", aiRouter)
 app.use("/api/contact", contactRoutes);
+
+app.use("/api/points", pointsRoutes)
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
