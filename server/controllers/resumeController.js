@@ -1,6 +1,27 @@
 import imagekit from "../configs/imageKit.js";
 import Resume from "../models/Resume.js";
+import User from "../models/User.js";
 import fs from "fs";
+
+// Helper function to check if profile is complete
+const checkProfileCompletion = (resumeData) => {
+  const { personal_info, professional_summary, skills, experience, education } = resumeData;
+  
+  // Check if essential personal info is filled
+  const hasPersonalInfo = personal_info.full_name && 
+                          personal_info.email && 
+                          personal_info.phone;
+  
+  // Check if at least one of these sections has content
+  const hasSummary = professional_summary && professional_summary.length > 0;
+  const hasSkills = skills && skills.length > 0;
+  const hasExperience = experience && experience.length > 0 && experience[0].company;
+  const hasEducation = education && education.length > 0 && education[0].institution;
+  
+  // Profile is complete if has personal info and at least 2 other sections
+  return hasPersonalInfo && 
+         [hasSummary, hasSkills, hasExperience, hasEducation].filter(Boolean).length >= 2;
+};
 
 export const createResume = async (req, res) => {
   try {
@@ -142,11 +163,60 @@ export const updateResume = async (req, res) => {
       return res.status(404).json({ message: "Resume not found" });
     }
 
+    // Check if profile is now complete and award points if not already awarded
+    const user = await User.findById(userId);
+    if (user && !user.stats.profileCompleted) {
+      const isProfileComplete = checkProfileCompletion(resume);
+      
+      if (isProfileComplete) {
+        // Update user stats
+        user.stats.profileCompleted = true;
+        
+        // Award points for profile completion
+        const profilePoints = 100;
+        await user.addPoints(profilePoints, 'PROFILE_COMPLETE');
+        await user.save();
+        
+        // Create activity record
+        const Activity = (await import("../models/Activity.js")).default;
+        await Activity.create({
+          user: userId,
+          type: 'PROFILE_COMPLETE',
+          points: profilePoints,
+          description: 'Profile completed',
+        });
+      }
+    }
+
     return res
       .status(200)
       .json({ message: "Resume saved successfully", resume });
   } catch (error) {
     console.error("Error updating resume:", error);
     return res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+export const trackResumeDownload = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { resumeId } = req.params;
+
+    // Verify the resume belongs to the user
+    const resume = await Resume.findOne({ _id: resumeId, userId });
+
+    if (!resume) {
+      return res.status(404).json({ message: "Resume not found" });
+    }
+
+    // Track the download in user stats and award points
+    // This will be handled by the points system
+    return res.status(200).json({ 
+      success: true,
+      message: "Download tracked successfully" 
+    });
+  } catch (error) {
+    console.error("Error tracking resume download:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

@@ -99,8 +99,33 @@ export default function ResumeBuilder() {
     }
   };
 
-  const downloadResume = () => {
-    window.print();
+  const downloadResume = async () => {
+    try {
+      // Track the download in backend for points
+      const token = localStorage.getItem("token");
+      await API.post(`/api/resumes/track-download/${resumeId}`, {}, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      // Award points for download
+      await API.post('/api/points/award', {
+        activityType: 'RESUME_DOWNLOADED',
+        metadata: { resumeId }
+      }, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      // Trigger browser print dialog
+      window.print();
+    } catch (error) {
+      console.error("Error tracking download:", error);
+      // Still allow printing even if tracking fails
+      window.print();
+    }
   };
 
   const saveResume = async() => {

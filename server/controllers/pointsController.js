@@ -101,6 +101,11 @@ export const awardPoints = async (req, res) => {
       await user.save();
     }
 
+    if (activityType === 'RESUME_DOWNLOADED') {
+      user.stats.resumesDownloaded += 1;
+      await user.save();
+    }
+
     const newBadges = await checkAndAwardBadges(user);
 
     res.json({
