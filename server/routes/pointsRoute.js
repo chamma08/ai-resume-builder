@@ -1,5 +1,6 @@
 import express from 'express';
 import { protect } from '../middlewares/authMiddleware.js';
+import { awardPoints, generateReferralCode, getActivityHistory, getLeaderboard, getUserPoints, recordSocialFollow } from '../controllers/pointsController.js';
 
 const router = express.Router();
 
