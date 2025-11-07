@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken";
 import Resume from "../models/Resume.js";
 import transporter from "../configs/email.js";
 import crypto from "crypto";
+import { applyReferralCode } from "../controllers/pointsController.js";
+import Activity from "../models/Activity.js";
 
 const generateToken = (userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -14,7 +16,7 @@ const generateToken = (userId) => {
 
 export const signUp = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, referralCode } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
@@ -32,6 +34,29 @@ export const signUp = async (req, res) => {
       email,
       password: hashedPassword,
     });
+
+    const signupPoints = 50;
+    await newUser.addPoints(signupPoints, "SIGNUP");
+
+    // Create signup activity
+    await Activity.create({
+      user: newUser._id,
+      type: "SIGNUP",
+      points: signupPoints,
+      description: "Welcome! Account created",
+    });
+
+    // Handle referral code if provided
+    if (referralCode) {
+      const referralResult = await applyReferralCode(newUser._id, referralCode);
+      if (referralResult.success) {
+        console.log(`User referred by: ${referralResult.referrer}`);
+      }
+    }
+
+    // Generate referral code for new user
+    newUser.generateReferralCode();
+    await newUser.save();
 
     const token = generateToken(newUser._id);
 
@@ -85,26 +110,25 @@ export const signIn = async (req, res) => {
   }
 };
 
-
 export const getUserById = async (req, res) => {
-    try {
-        const userId = req.userId;
-        const user = await User.findById(userId).select("-password");
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        return res.status(200).json({
-            message: "User retrieved successfully",
-            user: {
-                ...user.toObject(),
-                password: undefined,
-            },
-        });
-    } catch (error) {
-        console.error("Get user error:", error);
-        return res.status(500).json({ message: "Internal server error" });
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-}
+    return res.status(200).json({
+      message: "User retrieved successfully",
+      user: {
+        ...user.toObject(),
+        password: undefined,
+      },
+    });
+  } catch (error) {
+    console.error("Get user error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 export const getUserResumes = async (req, res) => {
   try {
@@ -117,7 +141,7 @@ export const getUserResumes = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
   }
-}
+};
 
 // Forgot Password - Send OTP
 export const forgotPassword = async (req, res) => {
@@ -130,12 +154,14 @@ export const forgotPassword = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "No account found with this email" });
+      return res
+        .status(404)
+        .json({ message: "No account found with this email" });
     }
 
     // Generate 6-digit OTP
     const otp = crypto.randomInt(100000, 999999).toString();
-    
+
     // Set OTP and expiry (10 minutes)
     user.resetPasswordOTP = otp;
     user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
@@ -196,18 +222,19 @@ export const forgotPassword = async (req, res) => {
     });
   } catch (error) {
     console.error("Forgot password error:", error);
-    
+
     // Check if it's an email-related error
-    if (error.code === 'EAUTH' || error.message?.includes('credentials')) {
-      return res.status(500).json({ 
-        message: "Email service is not configured properly. Please contact support.",
-        error: "Email configuration error"
+    if (error.code === "EAUTH" || error.message?.includes("credentials")) {
+      return res.status(500).json({
+        message:
+          "Email service is not configured properly. Please contact support.",
+        error: "Email configuration error",
       });
     }
-    
-    return res.status(500).json({ 
+
+    return res.status(500).json({
       message: "Failed to send OTP. Please try again later.",
-      error: error.message 
+      error: error.message,
     });
   }
 };
@@ -232,7 +259,9 @@ export const verifyOTP = async (req, res) => {
     }
 
     if (user.resetPasswordExpires < Date.now()) {
-      return res.status(400).json({ message: "OTP has expired. Please request a new one." });
+      return res
+        .status(400)
+        .json({ message: "OTP has expired. Please request a new one." });
     }
 
     return res.status(200).json({
@@ -255,7 +284,9 @@ export const resetPassword = async (req, res) => {
     }
 
     if (newPassword.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters long" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters long" });
     }
 
     const user = await User.findOne({ email });
@@ -269,12 +300,14 @@ export const resetPassword = async (req, res) => {
     }
 
     if (user.resetPasswordExpires < Date.now()) {
-      return res.status(400).json({ message: "OTP has expired. Please request a new one." });
+      return res
+        .status(400)
+        .json({ message: "OTP has expired. Please request a new one." });
     }
 
     // Hash new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    
+
     // Update password and clear OTP fields
     user.password = hashedPassword;
     user.resetPasswordOTP = null;
