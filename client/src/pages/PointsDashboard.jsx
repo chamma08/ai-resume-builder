@@ -31,10 +31,36 @@ export default function PointsDashboard() {
   } = useSelector((state) => state.points);
 
   const [followLoading, setFollowLoading] = useState({});
+  const [clickedLinks, setClickedLinks] = useState({});
+  const [countdowns, setCountdowns] = useState({});
 
   useEffect(() => {
     dispatch(fetchUserPoints());
   }, [dispatch]);
+
+  // Countdown effect
+  useEffect(() => {
+    const intervals = {};
+    
+    Object.keys(countdowns).forEach((platform) => {
+      if (countdowns[platform] > 0) {
+        intervals[platform] = setInterval(() => {
+          setCountdowns((prev) => {
+            const newCount = prev[platform] - 1;
+            if (newCount <= 0) {
+              clearInterval(intervals[platform]);
+              return { ...prev, [platform]: 0 };
+            }
+            return { ...prev, [platform]: newCount };
+          });
+        }, 1000);
+      }
+    });
+
+    return () => {
+      Object.values(intervals).forEach(clearInterval);
+    };
+  }, [countdowns]);
 
   // Level configuration
   const levelConfig = {
@@ -51,13 +77,24 @@ export default function PointsDashboard() {
   // Social media platforms
   const socialPlatforms = [
     /* { id: 'twitter', name: 'Twitter', icon: '𝕏', url: 'https://twitter.com/yourhandle', color: 'bg-black' }, */
-    { id: 'linkedin', name: 'LinkedIn', icon: 'in', url: 'https://linkedin.com/company/yourcompany', color: 'bg-blue-600' },
-    { id: 'facebook', name: 'Facebook', icon: 'f', url: 'https://facebook.com/yourpage', color: 'bg-blue-700' },
-    { id: 'instagram', name: 'Instagram', icon: '📷', url: 'https://instagram.com/yourhandle', color: 'bg-gradient-to-r from-purple-500 to-pink-500' },
-    { id: 'youtube', name: 'YouTube', icon: '▶', url: 'https://youtube.com/@yourchannel', color: 'bg-red-600' }
+    { id: 'linkedin', name: 'LinkedIn', icon: 'in', url: 'https://www.linkedin.com/company/job-labs-sri-lanka/', color: 'bg-blue-600' },
+    { id: 'facebook', name: 'Facebook', icon: 'f', url: 'https://www.facebook.com/share/17LDn2cdnr/?mibextid=wwXIfr', color: 'bg-blue-700' },
+    { id: 'instagram', name: 'Instagram', icon: '📷', url: 'https://www.instagram.com/job.labs?igsh=bDM5N2ZsYmZ5eGJx', color: 'bg-gradient-to-r from-purple-500 to-pink-500' },
+    { id: 'youtube', name: 'YouTube', icon: '▶', url: 'https://www.youtube.com/channel/UCIeo4mgjR8gOGxnrmAmpRhw/featured', color: 'bg-red-600' }
   ];
 
   const handleSocialFollow = async (platform) => {
+    // Check if user has clicked the link and waited
+    if (!clickedLinks[platform]) {
+      toast.warning(`Please click the ${platform} link above first to follow us!`);
+      return;
+    }
+
+    if (countdowns[platform] && countdowns[platform] > 0) {
+      toast.info(`Please wait ${countdowns[platform]} seconds after following...`);
+      return;
+    }
+
     setFollowLoading({ ...followLoading, [platform]: true });
     try {
       await dispatch(recordSocialFollow({ platform })).unwrap();
@@ -67,6 +104,18 @@ export default function PointsDashboard() {
     } finally {
       setFollowLoading({ ...followLoading, [platform]: false });
     }
+  };
+
+  const handleSocialLinkClick = (platformId, platformName) => {
+    // Mark that user clicked the link
+    setClickedLinks((prev) => ({ ...prev, [platformId]: true }));
+    
+    // Start countdown (15 seconds to give time for user to follow)
+    setCountdowns((prev) => ({ ...prev, [platformId]: 15 }));
+    
+    toast.info(`Please follow us on ${platformName} and return to claim your points!`, {
+      autoClose: 5000,
+    });
   };
 
   const handleGenerateReferral = async () => {
@@ -193,7 +242,10 @@ export default function PointsDashboard() {
           <Share2 className="text-blue-500" />
           Follow Us & Earn Points
         </h3>
-        <p className="text-gray-600 mb-6">Follow us on social media to earn 1 point per platform!</p>
+        <p className="text-gray-600 mb-2">Follow us on social media to earn 1 point per platform!</p>
+        <p className="text-sm text-orange-600 font-semibold mb-6">
+          📌 Click the social media button → Follow our account → Wait 15 seconds → Claim your points!
+        </p>
         
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {socialPlatforms.map((platform) => {
@@ -206,6 +258,7 @@ export default function PointsDashboard() {
                   href={platform.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => handleSocialLinkClick(platform.id, platform.name)}
                   className={`${platform.color} text-white rounded-lg p-4 block mb-2 hover:opacity-90 transition-opacity`}
                 >
                   <div className="text-3xl mb-2">{platform.icon}</div>
@@ -213,14 +266,24 @@ export default function PointsDashboard() {
                 </a>
                 <button
                   onClick={() => handleSocialFollow(platform.id)}
-                  disabled={isFollowed || isLoading}
+                  disabled={isFollowed || isLoading || (countdowns[platform.id] > 0)}
                   className={`w-full py-2 px-4 rounded text-sm font-semibold transition-colors ${
                     isFollowed 
                       ? 'bg-green-100 text-green-700 cursor-not-allowed' 
+                      : (countdowns[platform.id] > 0)
+                      ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
                       : 'bg-blue-500 text-white hover:bg-blue-600'
                   }`}
                 >
-                  {isLoading ? 'Processing...' : isFollowed ? 'Followed ✓' : 'Claim +1pt'}
+                  {isLoading 
+                    ? 'Processing...' 
+                    : isFollowed 
+                    ? 'Followed ✓' 
+                    : countdowns[platform.id] > 0
+                    ? `Wait ${countdowns[platform.id]}s`
+                    : clickedLinks[platform.id]
+                    ? 'Claim +1pt'
+                    : 'Follow First'}
                 </button>
               </div>
             );
