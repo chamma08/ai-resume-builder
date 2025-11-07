@@ -6,17 +6,20 @@ import {
   TrashIcon,
   UploadCloudIcon,
   XIcon,
+  Trophy,
+  TrendingUp,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import API from "../configs/api";
 import { toast } from "react-toastify";
 import pdfTotext from "react-pdftotext";
-import { awardPoints } from "../redux/features/pointsSlice";
+import { awardPoints, fetchUserPoints } from "../redux/features/pointsSlice";
 
 export default function Dashboard() {
   const { user, token } = useSelector((state) => state.auth);
+  const { points, level, progress } = useSelector((state) => state.points);
   const dispatch = useDispatch();
 
   const colors = [
@@ -218,11 +221,60 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchResumes();
+    // Fetch points when dashboard loads
+    dispatch(fetchUserPoints());
   }, []);
 
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Points Widget - Compact with Hover Expansion */}
+        <Link to="/app/points">
+          <div className="group bg-white border-2 border-blue-200 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden mb-6">
+            {/* Compact View - Always Visible */}
+            <div className="flex items-center justify-between p-3 sm:p-4">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
+                  <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                </div>
+                <div className="flex items-center gap-3 sm:gap-6">
+                  <div>
+                    <p className="text-xl sm:text-2xl font-bold text-slate-800">{points || 0}</p>
+                    <p className="text-xs text-slate-500">Points</p>
+                  </div>
+                  <div className="h-8 sm:h-10 w-px bg-slate-200"></div>
+                  <div>
+                    <p className="text-base sm:text-lg font-bold text-slate-800">{level || 'Bronze'}</p>
+                    <p className="text-xs text-slate-500">Level</p>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-blue-600 group-hover:text-purple-600 transition-colors">
+                <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6" />
+                <span className="hidden sm:inline text-sm font-medium">View Details</span>
+              </div>
+            </div>
+            
+            {/* Expanded View - Visible on Hover */}
+            {level !== 'Diamond' && (
+              <div className="max-h-0 group-hover:max-h-20 transition-all duration-300 overflow-hidden bg-slate-50 border-t border-slate-200">
+                <div className="p-3 sm:p-4">
+                  <div className="flex justify-between text-xs sm:text-sm text-slate-600 mb-2">
+                    <span className="font-medium">Progress to Next Level</span>
+                    <span className="font-bold text-blue-600">{Math.round(progress || 0)}%</span>
+                  </div>
+                  <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                    <div 
+                      className="bg-blue-600 h-full rounded-full transition-all duration-500"
+                      style={{ width: `${progress || 0}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </Link>
+
         {/* Header Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-800 mb-2">My Resumes</h1>
@@ -376,20 +428,7 @@ export default function Dashboard() {
             <p className="text-slate-600 text-center mb-6 max-w-md">
               Get started by creating a new resume or uploading an existing one
             </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowCreateResume(true)}
-                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-md"
-              >
-                Create Resume
-              </button>
-              <button
-                onClick={() => setShowUploadResume(true)}
-                className="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors shadow-md"
-              >
-                Upload Resume
-              </button>
-            </div>
+            
           </div>
         )}
 
