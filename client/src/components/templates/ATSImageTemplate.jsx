@@ -190,7 +190,7 @@ const ATSImageTemplate = ({ data, accentColor }) => {
                             <div key={index}>
                                 <p className="text-gray-700 text-sm">
                                     <span className="font-semibold">{skillCategory.category}:</span>{" "}
-                                    {skillCategory.items.join(", ")}
+                                    {Array.isArray(skillCategory.items) ? skillCategory.items.join(", ") : ""}
                                 </p>
                             </div>
                         ))}
