@@ -55,13 +55,13 @@ export default function Navbar() {
             <Trophy size={18} className="text-amber-500" />
             Points
           </Link>
-          <Link
+          {/* <Link
             to="/app/leaderboard"
             className="flex items-center gap-2 px-3 xl:px-4 py-2.5 rounded-lg font-medium text-slate-700 hover:bg-green-50 hover:text-green-600 transition-all duration-200 border-2 border-transparent hover:border-green-200"
           >
             <TrendingUp size={18} className="text-green-500" />
             Leaderboard
-          </Link>
+          </Link> */}
           <Link
             to="/app/activity"
             className="flex items-center gap-2 px-3 xl:px-4 py-2.5 rounded-lg font-medium text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200 border-2 border-transparent hover:border-purple-200"
