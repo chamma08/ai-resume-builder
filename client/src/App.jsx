@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { login, setLoading } from "./redux/features/authSlice";
+import { awardPoints, fetchUserPoints } from "./redux/features/pointsSlice";
 import Home from "./pages/Home";
 import Layout from "./pages/Layout";
 import SignUp from "./pages/SignUp";
@@ -23,7 +24,7 @@ import ReferralPage from "./pages/ReferralPage";
 
 function App() {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.auth);
+  const { loading,user } = useSelector((state) => state.auth);
 
   const getUserData = async () => {
     dispatch(setLoading(true));
@@ -46,10 +47,41 @@ function App() {
     }
   };
 
+  const checkDailyLogin = async () => {
+    if (!user) return;
+    
+    const lastLogin = localStorage.getItem('lastLoginDate');
+    const today = new Date().toDateString();
+    
+    if (lastLogin !== today) {
+      // Award daily login points
+      try {
+        await dispatch(awardPoints({ 
+          activityType: 'DAILY_LOGIN' 
+        })).unwrap();
+        
+        localStorage.setItem('lastLoginDate', today);
+        
+        // Don't show toast immediately to avoid spam
+        console.log('Daily login bonus awarded: +10 points');
+      } catch (error) {
+        console.error('Error awarding daily login:', error);
+      }
+    }
+  };
+
   useEffect(() => {
     getUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (user && !loading) {
+      checkDailyLogin();
+      dispatch(fetchUserPoints());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, loading, dispatch]);
 
   // Show loading screen while loading
   if (loading) {
