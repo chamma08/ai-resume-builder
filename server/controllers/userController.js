@@ -35,7 +35,7 @@ export const signUp = async (req, res) => {
       password: hashedPassword,
     });
 
-    const signupPoints = 50;
+    const signupPoints = 25;
     await newUser.addPoints(signupPoints, "SIGNUP");
 
     // Create signup activity

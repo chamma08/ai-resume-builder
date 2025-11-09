@@ -2,6 +2,11 @@ import imagekit from "../configs/imageKit.js";
 import Resume from "../models/Resume.js";
 import User from "../models/User.js";
 import fs from "fs";
+import { 
+  deductPointsWithTransaction, 
+  getDownloadCost,
+  needsUnlock,
+} from "../utils/pointsManager.js";
 
 // Helper function to check if profile is complete
 const checkProfileCompletion = (resumeData) => {
@@ -173,7 +178,7 @@ export const updateResume = async (req, res) => {
         user.stats.profileCompleted = true;
         
         // Award points for profile completion
-        const profilePoints = 100;
+        const profilePoints = 50;
         await user.addPoints(profilePoints, 'PROFILE_COMPLETE');
         await user.save();
         
@@ -218,5 +223,67 @@ export const trackResumeDownload = async (req, res) => {
   } catch (error) {
     console.error("Error tracking resume download:", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// UPDATE: downloadResume function
+export const downloadResume = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { resumeId } = req.params;
+    const { templateType } = req.body; // Get template type from request
+
+    // Get resume
+    const resume = await Resume.findOne({ _id: resumeId, userId });
+    if (!resume) {
+      return res.status(404).json({ message: "Resume not found" });
+    }
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Determine template type (use from request or resume data)
+    const template = templateType || resume.template || "classic";
+    
+    // Check if template needs to be unlocked first
+    if (needsUnlock(template) && !user.hasTemplateUnlocked(template)) {
+      return res.status(403).json({ 
+        message: "Template not unlocked",
+        error: "TEMPLATE_LOCKED",
+        templateType: template,
+      });
+    }
+
+    // Get download cost for tracking purposes
+    const cost = getDownloadCost(template);
+
+    // Note: Points deduction is handled by the client via the points API
+    // This endpoint assumes points have already been deducted
+
+    // Update user stats
+    user.stats.resumesDownloaded += 1;
+    user.downloads.push({
+      resumeId: resume._id,
+      templateType: template,
+      downloadedAt: new Date(),
+      cost,
+    });
+    await user.save();
+
+    // Return success with resume data
+    return res.status(200).json({
+      message: "Resume ready for download",
+      resume: resume,
+      template: template,
+    });
+
+  } catch (error) {
+    console.error("Download resume error:", error);
+    return res.status(500).json({ 
+      message: error.message || "Failed to process download" 
+    });
   }
 };

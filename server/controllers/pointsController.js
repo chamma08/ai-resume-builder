@@ -1,12 +1,21 @@
 import Activity from "../models/Activity.js";
 import User from "../models/User.js";
+import Transaction from "../models/Transaction.js";
+import { 
+  deductPointsWithTransaction, 
+  addPointsWithTransaction,
+  getDownloadCost,
+  getUnlockCost,
+  needsUnlock,
+  TEMPLATE_TIERS 
+} from "../utils/pointsManager.js";
 
 const POINT_VALUES = {
-  SIGNUP: 50,
-  PROFILE_COMPLETE: 100,
-  RESUME_CREATED: 50,
-  RESUME_DOWNLOADED: 20,
-  SOCIAL_FOLLOW: 1,
+  SIGNUP: 25,
+  PROFILE_COMPLETE: 50,
+  RESUME_CREATED: 25,
+  RESUME_DOWNLOADED: 0,
+  SOCIAL_FOLLOW: 10,
   REFERRAL: 200,
   DAILY_LOGIN: 10,
   LEVEL_UP: 100,
@@ -315,7 +324,7 @@ export const applyReferralCode = async (userId, referralCode) => {
   }
 };
 
-// Helper: Get activity description
+/* // Helper: Get activity description
 function getActivityDescription(activityType, metadata = {}) {
   const descriptions = {
     SIGNUP: 'Welcome! Account created',
@@ -328,6 +337,26 @@ function getActivityDescription(activityType, metadata = {}) {
     LEVEL_UP: `Leveled up to ${metadata.newLevel}`
   };
   return descriptions[activityType] || 'Activity completed';
+} */
+
+  // Helper function for activity descriptions
+function getActivityDescription(activityType, metadata) {
+  const descriptions = {
+    SIGNUP: "Welcome bonus for signing up",
+    PROFILE_COMPLETE: "Bonus for completing your profile",
+    RESUME_CREATED: metadata.isFirst 
+      ? "First resume created bonus" 
+      : "Created a new resume",
+    SOCIAL_FOLLOW: `Followed us on ${metadata.platform}`,
+    REFERRAL: `Referred ${metadata.referredUserName || "a friend"}`,
+    DAILY_LOGIN: "Daily login bonus",
+    LEVEL_UP: `Leveled up to ${metadata.newLevel}`,
+    SPEND_CV_DOWNLOAD: `Downloaded CV using ${metadata.templateType} template`,
+    SPEND_TEMPLATE_UNLOCK: `Unlocked ${metadata.templateType} template`,
+    SPEND_AI_SUGGESTION: "Used AI suggestion feature",
+  };
+  
+  return descriptions[activityType] || "Point transaction";
 }
 
 // Helper: Check and award badges
@@ -345,6 +374,20 @@ async function checkAndAwardBadges(user) {
   // Badge: Resume Master (10 resumes)
   if (user.stats.resumesCreated >= 10 && !existingBadgeNames.includes('Resume Master')) {
     const badge = { name: 'Resume Master', icon: '🎓', earnedAt: new Date() };
+    user.badges.push(badge);
+    newBadges.push(badge);
+  }
+  
+  // Badge: First Download
+  if (user.stats.resumesDownloaded >= 1 && !existingBadgeNames.includes('First Download')) {
+    const badge = { name: 'First Download', icon: '⬇️', earnedAt: new Date() };
+    user.badges.push(badge);
+    newBadges.push(badge);
+  }
+  
+  // Badge: Download Expert (5 downloads)
+  if (user.stats.resumesDownloaded >= 5 && !existingBadgeNames.includes('Download Expert')) {
+    const badge = { name: 'Download Expert', icon: '📥', earnedAt: new Date() };
     user.badges.push(badge);
     newBadges.push(badge);
   }
@@ -370,3 +413,138 @@ async function checkAndAwardBadges(user) {
   
   return newBadges;
 }
+
+// NEW: Deduct points endpoint
+export const deductPoints = async (req, res) => {
+  try {
+    const { activityType, amount, metadata = {} } = req.body;
+    const userId = req.userId;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ message: "Invalid amount" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check balance
+    if (!user.hasEnoughPoints(amount)) {
+      return res.status(400).json({ 
+        message: `Insufficient points. You have ${user.points} but need ${amount}.`,
+        currentBalance: user.points,
+        required: amount,
+        shortfall: amount - user.points,
+      });
+    }
+
+    // Deduct points with transaction
+    const description = getActivityDescription(activityType, metadata);
+    const result = await deductPointsWithTransaction(
+      userId,
+      amount,
+      activityType,
+      description,
+      metadata
+    );
+
+    // Create Activity record for resume downloads to show in activity history
+    if (activityType === "SPEND_CV_DOWNLOAD") {
+      await Activity.create({
+        user: userId,
+        type: 'RESUME_DOWNLOADED',
+        points: amount,
+        description: description,
+        metadata: metadata
+      });
+      
+      // Check and award download-related badges
+      const newBadges = await checkAndAwardBadges(user);
+      
+      // Create activity records for new badges
+      for (const badge of newBadges) {
+        await Activity.create({
+          user: userId,
+          type: 'BADGE_EARNED',
+          points: 0,
+          description: `Earned badge: ${badge.name}`,
+          metadata: { badgeName: badge.name }
+        });
+      }
+    }
+
+    return res.status(200).json({
+      message: "Points deducted successfully",
+      data: {
+        amountDeducted: amount,
+        previousBalance: result.balanceBefore,
+        currentBalance: result.currentBalance,
+        transaction: result.transaction,
+      },
+    });
+
+  } catch (error) {
+    console.error("Deduct points error:", error);
+    return res.status(500).json({ 
+      message: error.message || "Failed to deduct points" 
+    });
+  }
+};
+
+
+// NEW: Check if user can afford an action
+export const checkBalance = async (req, res) => {
+  try {
+    const { amount, actionType } = req.query;
+    const userId = req.userId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const canAfford = user.hasEnoughPoints(Number(amount));
+    
+    return res.status(200).json({
+      canAfford,
+      currentBalance: user.points,
+      required: Number(amount),
+      shortfall: canAfford ? 0 : Number(amount) - user.points,
+    });
+
+  } catch (error) {
+    console.error("Check balance error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// NEW: Get download cost for template
+export const getTemplateDownloadCost = async (req, res) => {
+  try {
+    const { templateType } = req.params;
+    const userId = req.userId;
+
+    const cost = getDownloadCost(templateType);
+    const unlockCost = getUnlockCost(templateType);
+    const requiresUnlock = needsUnlock(templateType);
+    
+    const user = await User.findById(userId);
+    const isUnlocked = requiresUnlock ? user.hasTemplateUnlocked(templateType) : true;
+    
+    return res.status(200).json({
+      templateType,
+      tier: TEMPLATE_TIERS[templateType]?.tier || "FREE",
+      downloadCost: cost,
+      unlockCost,
+      requiresUnlock,
+      isUnlocked,
+      totalCost: isUnlocked ? cost : cost + unlockCost,
+    });
+
+  } catch (error) {
+    console.error("Get template cost error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+

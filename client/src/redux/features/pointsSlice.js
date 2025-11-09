@@ -93,6 +93,59 @@ export const generateReferralCode = createAsyncThunk(
   }
 );
 
+// NEW: Deduct points
+export const deductPoints = createAsyncThunk(
+  "points/deductPoints",
+  async ({ activityType, amount, metadata }, { rejectWithValue }) => {
+    try {
+      const response = await API.post("/api/points/deduct", {
+        activityType,
+        amount,
+        metadata,
+      });
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || { message: "Failed to deduct points" }
+      );
+    }
+  }
+);
+
+// NEW: Check balance
+export const checkBalance = createAsyncThunk(
+  "points/checkBalance",
+  async ({ amount, actionType }, { rejectWithValue }) => {
+    try {
+      const response = await API.get(
+        `/api/points/check-balance?amount=${amount}&actionType=${actionType}`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to check balance"
+      );
+    }
+  }
+);
+
+// NEW: Get template download cost
+export const getTemplateDownloadCost = createAsyncThunk(
+  "points/getTemplateDownloadCost",
+  async (templateType, { rejectWithValue }) => {
+    try {
+      const response = await API.get(
+        `/api/points/template-cost/${templateType}`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to get template cost"
+      );
+    }
+  }
+);
+
 const pointsSlice = createSlice({
   name: "points",
   initialState: {
@@ -103,16 +156,21 @@ const pointsSlice = createSlice({
     badges: [],
     stats: {},
     socialMediaFollows: {},
-    referralCode: null,
+    referralCode: "",
     activities: [],
     leaderboard: [],
     userRank: null,
     loading: false,
     error: null,
+    templateCosts: {},
+    balanceCheck: null,
   },
   reducers: {
     clearError: (state) => {
       state.error = null;
+    },
+    updateLocalBalance: (state, action) => {
+      state.points = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -167,8 +225,33 @@ const pointsSlice = createSlice({
       .addCase(generateReferralCode.fulfilled, (state, action) => {
         state.referralCode = action.payload.referralCode;
       });
+
+    // Deduct points
+    builder
+      .addCase(deductPoints.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deductPoints.fulfilled, (state, action) => {
+        state.loading = false;
+        state.points = action.payload.currentBalance;
+      })
+      .addCase(deductPoints.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    // Check balance
+    builder.addCase(checkBalance.fulfilled, (state, action) => {
+      state.balanceCheck = action.payload;
+    });
+
+    // Get template cost
+    builder.addCase(getTemplateDownloadCost.fulfilled, (state, action) => {
+      state.templateCosts[action.payload.templateType] = action.payload;
+    });
   },
 });
 
-export const { clearError } = pointsSlice.actions;
+export const { clearError, updateLocalBalance } = pointsSlice.actions;
 export default pointsSlice.reducer;

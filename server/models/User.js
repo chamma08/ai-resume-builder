@@ -69,10 +69,30 @@ const UserSchema = new mongoose.Schema(
       youtube: { type: Boolean, default: false },
     },
 
+    unlockedTemplates: [
+      {
+        templateId: String,
+        unlockedAt: Date,
+        cost: Number,
+      },
+    ],
+
+    downloads: [
+      {
+        resumeId: mongoose.Schema.Types.ObjectId,
+        templateType: String,
+        downloadedAt: Date,
+        cost: Number,
+      },
+    ],
+
     // User Statistics
     stats: {
       resumesCreated: { type: Number, default: 0 },
       resumesDownloaded: { type: Number, default: 0 },
+      totalPointsEarned: { type: Number, default: 0 }, // NEW
+      totalPointsSpent: { type: Number, default: 0 }, // NEW
+      totalPointsPurchased: { type: Number, default: 0 }, // NEW
       profileCompleted: { type: Boolean, default: false },
       firstResumeBonus: { type: Boolean, default: false },
       dailyLoginStreak: { type: Number, default: 0 },
@@ -97,26 +117,99 @@ UserSchema.virtual("nextLevelPoints").get(function () {
   return levels[this.level] || 0;
 });
 
-UserSchema.methods.addPoints = async function (points, activity) {
-  this.points += points;
+// NEW: Method to check if user has enough points
+UserSchema.methods.hasEnoughPoints = function (amount) {
+  return this.points >= amount;
+};
 
+// NEW: Method to deduct points (with validation)
+UserSchema.methods.deductPoints = async function (
+  amount,
+  transactionType,
+  metadata = {}
+) {
+  if (!this.hasEnoughPoints(amount)) {
+    throw new Error(
+      `Insufficient points. You have ${this.points} points but need ${amount}.`
+    );
+  }
+
+  const balanceBefore = this.points;
+  this.points -= amount;
+  const balanceAfter = this.points;
+
+  // Update stats
+  this.stats.totalPointsSpent += amount;
+
+  await this.save();
+
+  return {
+    success: true,
+    balanceBefore,
+    balanceAfter,
+    amountDeducted: amount,
+    currentBalance: this.points,
+  };
+};
+
+UserSchema.methods.addPoints = async function (
+  amount,
+  transactionType,
+  metadata = {}
+) {
+  const balanceBefore = this.points;
+  this.points += amount;
+  const balanceAfter = this.points;
+
+  // Update stats
+  this.stats.totalPointsEarned += amount;
+
+  // Check for level up
   const oldLevel = this.level;
   if (this.points >= 1000) {
-    this.level = "Diamond";   
+    this.level = "Diamond";
   } else if (this.points >= 600) {
-    this.level = "Platinum";  
+    this.level = "Platinum";
   } else if (this.points >= 300) {
-    this.level = "Gold";      
+    this.level = "Gold";
   } else if (this.points >= 100) {
-    this.level = "Silver";    
+    this.level = "Silver";
   } else {
-    this.level = "Bronze";    
+    this.level = "Bronze";
   }
 
   const leveledUp = oldLevel !== this.level;
   await this.save();
 
-  return { leveledUp, newLevel: this.level, totalPoints: this.points };
+  return {
+    success: true,
+    balanceBefore,
+    balanceAfter,
+    leveledUp,
+    newLevel: this.level,
+    currentBalance: this.points,
+  };
+};
+
+// NEW: Method to check if template is unlocked
+UserSchema.methods.hasTemplateUnlocked = function (templateId) {
+  return this.unlockedTemplates.some((t) => t.templateId === templateId);
+};
+
+// NEW: Method to unlock template
+UserSchema.methods.unlockTemplate = async function (templateId, cost) {
+  if (this.hasTemplateUnlocked(templateId)) {
+    throw new Error("Template already unlocked");
+  }
+
+  this.unlockedTemplates.push({
+    templateId,
+    unlockedAt: new Date(),
+    cost,
+  });
+
+  await this.save();
+  return true;
 };
 
 UserSchema.methods.generateReferralCode = function () {
