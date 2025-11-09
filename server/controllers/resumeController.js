@@ -2,6 +2,11 @@ import imagekit from "../configs/imageKit.js";
 import Resume from "../models/Resume.js";
 import User from "../models/User.js";
 import fs from "fs";
+import { 
+  deductPointsWithTransaction, 
+  getDownloadCost,
+  needsUnlock,
+} from "../utils/pointsManager.js";
 
 // Helper function to check if profile is complete
 const checkProfileCompletion = (resumeData) => {
@@ -218,5 +223,89 @@ export const trackResumeDownload = async (req, res) => {
   } catch (error) {
     console.error("Error tracking resume download:", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// UPDATE: downloadResume function
+export const downloadResume = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { resumeId } = req.params;
+    const { templateType } = req.body; // Get template type from request
+
+    // Get resume
+    const resume = await Resume.findOne({ _id: resumeId, userId });
+    if (!resume) {
+      return res.status(404).json({ message: "Resume not found" });
+    }
+
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Determine template type (use from request or resume data)
+    const template = templateType || resume.template || "classic";
+    
+    // Check if template needs to be unlocked first
+    if (needsUnlock(template) && !user.hasTemplateUnlocked(template)) {
+      return res.status(403).json({ 
+        message: "Template not unlocked",
+        error: "TEMPLATE_LOCKED",
+        templateType: template,
+      });
+    }
+
+    // Get download cost
+    const cost = getDownloadCost(template);
+
+    // Check if user has enough points
+    if (!user.hasEnoughPoints(cost)) {
+      return res.status(402).json({ 
+        message: `Insufficient points. You need ${cost} points to download this CV.`,
+        error: "INSUFFICIENT_POINTS",
+        required: cost,
+        current: user.points,
+        shortfall: cost - user.points,
+      });
+    }
+
+    // Deduct points
+    await deductPointsWithTransaction(
+      userId,
+      cost,
+      "SPEND_CV_DOWNLOAD",
+      `Downloaded CV using ${template} template`,
+      {
+        resumeId: resume._id.toString(),
+        templateType: template,
+        templateTier: TEMPLATE_TIERS[template]?.tier || "FREE",
+      }
+    );
+
+    // Update user stats
+    user.stats.resumesDownloaded += 1;
+    user.downloads.push({
+      resumeId: resume._id,
+      templateType: template,
+      downloadedAt: new Date(),
+      cost,
+    });
+    await user.save();
+
+    // Return success with balance
+    return res.status(200).json({
+      message: "Resume ready for download",
+      pointsDeducted: cost,
+      remainingBalance: user.points - cost,
+      resume: resume,
+    });
+
+  } catch (error) {
+    console.error("Download resume error:", error);
+    return res.status(500).json({ 
+      message: error.message || "Failed to process download" 
+    });
   }
 };
