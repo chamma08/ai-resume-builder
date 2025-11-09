@@ -262,9 +262,9 @@ export const downloadResume = async (req, res) => {
 
     // Note: Points deduction is handled by the client via the points API
     // This endpoint assumes points have already been deducted
+    // Stats update (resumesDownloaded) is handled in the points deduction endpoint
 
-    // Update user stats
-    user.stats.resumesDownloaded += 1;
+    // Track download history
     user.downloads.push({
       resumeId: resume._id,
       templateType: template,

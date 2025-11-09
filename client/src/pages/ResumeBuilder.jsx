@@ -81,7 +81,7 @@ export default function ResumeBuilder() {
   const handleConfirmDownload = async (cost) => {
     try {
       // Deduct points
-      await dispatch(
+      const deductResult = await dispatch(
         deductPoints({
           activityType: "SPEND_CV_DOWNLOAD",
           amount: cost,
@@ -109,6 +109,22 @@ export default function ResumeBuilder() {
 
       // Show success message
       toast.success(`Resume downloaded! ${cost} points deducted. Use browser print dialog to save as PDF.`);
+
+      // Check if any badges were earned
+      if (deductResult.newBadges && deductResult.newBadges.length > 0) {
+        deductResult.newBadges.forEach(badge => {
+          setTimeout(() => {
+            toast.success(`🎉 Badge Earned: ${badge.icon} ${badge.name}!`, {
+              duration: 4000,
+              style: {
+                background: '#10B981',
+                color: '#fff',
+                fontWeight: 'bold',
+              },
+            });
+          }, 1000);
+        });
+      }
 
       // Trigger browser print dialog (allows Save as PDF)
       setTimeout(() => {

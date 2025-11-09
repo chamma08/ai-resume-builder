@@ -33,12 +33,12 @@ export default function ActivityHistory() {
       SIGNUP: 'bg-blue-100 text-blue-700',
       PROFILE_COMPLETE: 'bg-green-100 text-green-700',
       RESUME_CREATED: 'bg-purple-100 text-purple-700',
-      RESUME_DOWNLOADED: 'bg-orange-100 text-orange-700',
+      RESUME_DOWNLOADED: 'bg-red-100 text-red-700', // Red for point deduction
       SOCIAL_FOLLOW: 'bg-pink-100 text-pink-700',
       REFERRAL: 'bg-yellow-100 text-yellow-700',
       DAILY_LOGIN: 'bg-cyan-100 text-cyan-700',
       LEVEL_UP: 'bg-indigo-100 text-indigo-700',
-      BADGE_EARNED: 'bg-red-100 text-red-700'
+      BADGE_EARNED: 'bg-orange-100 text-orange-700'
     };
     return colors[type] || 'bg-gray-100 text-gray-700';
   };
@@ -79,7 +79,7 @@ export default function ActivityHistory() {
           >
             All
           </button>
-          {['SIGNUP', 'PROFILE_COMPLETE', 'RESUME_CREATED', 'RESUME_DOWNLOADED', 'SOCIAL_FOLLOW', 'REFERRAL', 'LEVEL_UP'].map((type) => (
+          {['SIGNUP', 'PROFILE_COMPLETE', 'RESUME_CREATED', 'RESUME_DOWNLOADED', 'SOCIAL_FOLLOW', 'REFERRAL', 'BADGE_EARNED', 'LEVEL_UP'].map((type) => (
             <button
               key={type}
               onClick={() => setFilter(type)}
@@ -137,10 +137,24 @@ export default function ActivityHistory() {
                   </div>
                 </div>
                 <div className="text-right ml-4">
-                  <div className="flex items-center gap-2 bg-green-100 px-4 py-2 rounded-full">
-                    <TrendingUp size={18} className="text-green-600" />
-                    <span className="text-lg font-bold text-green-700">
-                      +{activity.points}
+                  <div className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-sm ${
+                    activity.points < 0 
+                      ? 'bg-red-100 border border-red-200' 
+                      : 'bg-green-100 border border-green-200'
+                  }`}>
+                    {activity.points < 0 ? (
+                      <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      </svg>
+                    ) : (
+                      <TrendingUp size={18} className="text-green-600" />
+                    )}
+                    <span className={`text-lg font-bold ${
+                      activity.points < 0 
+                        ? 'text-red-700' 
+                        : 'text-green-700'
+                    }`}>
+                      {activity.points > 0 ? '+' : ''}{activity.points}
                     </span>
                   </div>
                 </div>
