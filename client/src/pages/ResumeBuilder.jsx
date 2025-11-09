@@ -92,30 +92,29 @@ export default function ResumeBuilder() {
         })
       ).unwrap();
 
-      // Proceed with actual download
-      const response = await API.post(
+      // Track download on server (updates stats)
+      await API.post(
         `/api/resumes/download/${currentResumeId}`,
         { templateType: currentTemplate },
         {
           headers: { Authorization: token },
-          responseType: "blob", // For file download
         }
       );
 
-      // Create download link
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `resume-${currentResumeId}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      // Close modal
+      setShowDownloadModal(false);
 
       // Refresh points balance
       dispatch(fetchUserPoints());
 
-      toast.success(`Resume downloaded! ${cost} points deducted.`);
-      setShowDownloadModal(false);
+      // Show success message
+      toast.success(`Resume downloaded! ${cost} points deducted. Use browser print dialog to save as PDF.`);
+
+      // Trigger browser print dialog (allows Save as PDF)
+      setTimeout(() => {
+        window.print();
+      }, 500);
+
     } catch (error) {
       if (error.error === "INSUFFICIENT_POINTS") {
         toast.error(`Insufficient points! You need ${error.required} points.`);
