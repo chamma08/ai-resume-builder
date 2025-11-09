@@ -2,19 +2,19 @@ import Transaction from "../models/Transaction.js";
 import User from "../models/User.js";
 
 export const TEMPLATE_TIERS = {
-  classic: { tier: "FREE", downloadCost: 10, unlockCost: 0 },
-  minimal: { tier: "FREE", downloadCost: 10, unlockCost: 0 },
-  modern: { tier: "PREMIUM", downloadCost: 25, unlockCost: 100 },
-  elegant: { tier: "PREMIUM", downloadCost: 25, unlockCost: 100 },
-  "minimal-image": { tier: "PREMIUM", downloadCost: 25, unlockCost: 100 },
+  classic: { tier: "FREE", downloadCost: 50, unlockCost: 0 },
+  minimal: { tier: "FREE", downloadCost: 50, unlockCost: 0 },
+  modern: { tier: "PREMIUM", downloadCost: 50, unlockCost: 100 },
+  elegant: { tier: "PREMIUM", downloadCost: 50, unlockCost: 100 },
+  "minimal-image": { tier: "PREMIUM", downloadCost: 50, unlockCost: 100 },
   ats: { tier: "ELITE", downloadCost: 50, unlockCost: 200 },
   "ats-image": { tier: "ELITE", downloadCost: 50, unlockCost: 200 },
   corporate: { tier: "ELITE", downloadCost: 50, unlockCost: 200 },
 };
 
 export const POINT_COSTS = {
-  CV_DOWNLOAD_FREE: 10,
-  CV_DOWNLOAD_PREMIUM: 25,
+  CV_DOWNLOAD_FREE: 50,
+  CV_DOWNLOAD_PREMIUM: 50,
   CV_DOWNLOAD_ELITE: 50,
   AI_SUGGESTION_BASIC: 5,
   AI_SUGGESTION_ADVANCED: 15,
