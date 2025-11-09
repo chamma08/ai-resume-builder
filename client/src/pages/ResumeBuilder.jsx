@@ -25,14 +25,22 @@ import Experience from "../components/ResumeBuilderSections/Experience";
 import Education from "../components/ResumeBuilderSections/Education";
 import Project from "../components/ResumeBuilderSections/Project";
 import Skills from "../components/ResumeBuilderSections/Skills";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import API from "../configs/api";
 import { toast } from "react-toastify";
+import DownloadConfirmModal from "../components/modals/DownloadConfirmModal";
+import { deductPoints, fetchUserPoints } from '../redux/features/pointsSlice';
 
 export default function ResumeBuilder() {
+  const dispatch = useDispatch();
+
   const { resumeId } = useParams();
 
   const { token } = useSelector((state) => state.auth);
+
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [currentResumeId, setCurrentResumeId] = useState(null);
+  const [currentTemplate, setCurrentTemplate] = useState(null);
 
   const [resumeData, setResumeData] = useState({
     _id: "",
@@ -64,6 +72,61 @@ export default function ResumeBuilder() {
     }
   };
 
+  const handleDownloadClick = (resumeId, templateType) => {
+    setCurrentResumeId(resumeId);
+    setCurrentTemplate(templateType);
+    setShowDownloadModal(true);
+  };
+
+  const handleConfirmDownload = async (cost) => {
+    try {
+      // Deduct points
+      await dispatch(
+        deductPoints({
+          activityType: "SPEND_CV_DOWNLOAD",
+          amount: cost,
+          metadata: {
+            resumeId: currentResumeId,
+            templateType: currentTemplate,
+          },
+        })
+      ).unwrap();
+
+      // Proceed with actual download
+      const response = await API.post(
+        `/api/resumes/download/${currentResumeId}`,
+        { templateType: currentTemplate },
+        {
+          headers: { Authorization: token },
+          responseType: "blob", // For file download
+        }
+      );
+
+      // Create download link
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `resume-${currentResumeId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      // Refresh points balance
+      dispatch(fetchUserPoints());
+
+      toast.success(`Resume downloaded! ${cost} points deducted.`);
+      setShowDownloadModal(false);
+    } catch (error) {
+      if (error.error === "INSUFFICIENT_POINTS") {
+        toast.error(`Insufficient points! You need ${error.required} points.`);
+      } else if (error.error === "TEMPLATE_LOCKED") {
+        toast.error("Please unlock this template first!");
+      } else {
+        toast.error(error.message || "Failed to download resume");
+      }
+    }
+  };
+
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const [removeBackground, setRemoveBackground] = useState(false);
 
@@ -86,7 +149,10 @@ export default function ResumeBuilder() {
     try {
       const formData = new FormData();
       formData.append("resumeId", resumeId);
-      formData.append("resumeData", JSON.stringify({ public: !resumeData.public }));
+      formData.append(
+        "resumeData",
+        JSON.stringify({ public: !resumeData.public })
+      );
       const { data } = await API.put("/api/resumes/update-resume", formData, {
         headers: {
           Authorization: token,
@@ -99,7 +165,7 @@ export default function ResumeBuilder() {
     }
   };
 
-  const downloadResume = async () => {
+  /* const downloadResume = async () => {
     try {
       // Track the download in backend for points
       const token = localStorage.getItem("token");
@@ -126,23 +192,24 @@ export default function ResumeBuilder() {
       // Still allow printing even if tracking fails
       window.print();
     }
-  };
+  }; */
 
-  const saveResume = async() => {
+  const saveResume = async () => {
     try {
       let updatedResumeData = structuredClone(resumeData);
 
       //Remove image from resume data
-      if(typeof resumeData.personal_info.image === "object") {
+      if (typeof resumeData.personal_info.image === "object") {
         delete updatedResumeData.personal_info.image;
       }
 
       const formData = new FormData();
       formData.append("resumeId", resumeId);
       formData.append("resumeData", JSON.stringify(updatedResumeData));
-      
+
       removeBackground && formData.append("removeBackground", "yes");
-      typeof resumeData.personal_info.image === "object" && formData.append("image", resumeData.personal_info.image);
+      typeof resumeData.personal_info.image === "object" &&
+        formData.append("image", resumeData.personal_info.image);
 
       const { data } = await API.put("/api/resumes/update-resume", formData, {
         headers: {
@@ -155,7 +222,7 @@ export default function ResumeBuilder() {
       console.error("Error saving resume:", error);
       toast.error("Failed to save resume.");
     }
-  }
+  };
 
   const shareResume = async () => {
     const frontednUrl = window.location.href.split("/app")[0];
@@ -321,7 +388,16 @@ export default function ResumeBuilder() {
                 )}
               </div>
 
-              <button onClick={() => {toast.promise(saveResume(), {pending: "Saving...", success: "Resume saved successfully!", error: "Failed to save resume"})}} className="mt-6 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              <button
+                onClick={() => {
+                  toast.promise(saveResume(), {
+                    pending: "Saving...",
+                    success: "Resume saved successfully!",
+                    error: "Failed to save resume",
+                  });
+                }}
+                className="mt-6 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 Save Changes
               </button>
             </div>
@@ -332,11 +408,17 @@ export default function ResumeBuilder() {
             <div className="relative w-full">
               <div className="absolute bottom-3 left-0 right-0 flex items-center justify-end gap-2">
                 {resumeData.public && (
-                  <button onClick={shareResume} className="flex items-center px-3 gap-2 p-2 bg-green-600 text-white text-xs  rounded-lg hover:bg-green-700 transition-colors">
+                  <button
+                    onClick={shareResume}
+                    className="flex items-center px-3 gap-2 p-2 bg-green-600 text-white text-xs  rounded-lg hover:bg-green-700 transition-colors"
+                  >
                     <Share2Icon className="size-4 inline-block" /> Share
                   </button>
                 )}
-                <button onClick={changeResumeVisibility} className="flex items-center gap-2 text-xs p-2 px-4 rounded-lg bg-gray-200 hover:bg-gray-300 border border-gray-300 transition-colors">
+                <button
+                  onClick={changeResumeVisibility}
+                  className="flex items-center gap-2 text-xs p-2 px-4 rounded-lg bg-gray-200 hover:bg-gray-300 border border-gray-300 transition-colors"
+                >
                   {resumeData.public ? (
                     <EyeIcon className="size-4" />
                   ) : (
@@ -344,7 +426,10 @@ export default function ResumeBuilder() {
                   )}
                   {resumeData.public ? " Public" : " Private"}
                 </button>
-                <button onClick={downloadResume} className="flex items-center gap-2 text-xs p-2 px-6 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                <button
+                  onClick={() => handleDownloadClick(resumeId, resumeData.template)}
+                  className="flex items-center gap-2 text-xs p-2 px-6 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                >
                   <DownloadIcon className="size-4" /> Download
                 </button>
               </div>
@@ -356,11 +441,20 @@ export default function ResumeBuilder() {
               template={resumeData.template}
               accentColor={resumeData.accent_color}
             />
+
+            {/* Download confirmation modal */}
+            <DownloadConfirmModal
+              isOpen={showDownloadModal}
+              onClose={() => setShowDownloadModal(false)}
+              onConfirm={handleConfirmDownload}
+              resumeId={currentResumeId}
+              templateType={currentTemplate}
+            />
           </div>
 
           <div></div>
         </div>
       </div>
-    </div> 
+    </div>
   );
 }

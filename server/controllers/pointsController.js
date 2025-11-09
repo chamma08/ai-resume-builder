@@ -435,14 +435,8 @@ export const deductPoints = async (req, res) => {
       metadata
     );
 
-    // Create activity record
-    await Activity.create({
-      user: userId,
-      type: activityType,
-      points: -amount, // Negative for spending
-      description,
-      metadata,
-    });
+    // Note: No Activity record created for spending - spending is tracked in Transactions only
+    // Activity model is for earning activities only
 
     return res.status(200).json({
       message: "Points deducted successfully",

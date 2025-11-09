@@ -257,32 +257,11 @@ export const downloadResume = async (req, res) => {
       });
     }
 
-    // Get download cost
+    // Get download cost for tracking purposes
     const cost = getDownloadCost(template);
 
-    // Check if user has enough points
-    if (!user.hasEnoughPoints(cost)) {
-      return res.status(402).json({ 
-        message: `Insufficient points. You need ${cost} points to download this CV.`,
-        error: "INSUFFICIENT_POINTS",
-        required: cost,
-        current: user.points,
-        shortfall: cost - user.points,
-      });
-    }
-
-    // Deduct points
-    await deductPointsWithTransaction(
-      userId,
-      cost,
-      "SPEND_CV_DOWNLOAD",
-      `Downloaded CV using ${template} template`,
-      {
-        resumeId: resume._id.toString(),
-        templateType: template,
-        templateTier: TEMPLATE_TIERS[template]?.tier || "FREE",
-      }
-    );
+    // Note: Points deduction is handled by the client via the points API
+    // This endpoint assumes points have already been deducted
 
     // Update user stats
     user.stats.resumesDownloaded += 1;
@@ -294,12 +273,11 @@ export const downloadResume = async (req, res) => {
     });
     await user.save();
 
-    // Return success with balance
+    // Return success with resume data
     return res.status(200).json({
       message: "Resume ready for download",
-      pointsDeducted: cost,
-      remainingBalance: user.points - cost,
       resume: resume,
+      template: template,
     });
 
   } catch (error) {
