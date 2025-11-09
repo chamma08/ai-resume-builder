@@ -378,6 +378,20 @@ async function checkAndAwardBadges(user) {
     newBadges.push(badge);
   }
   
+  // Badge: First Download
+  if (user.stats.resumesDownloaded >= 1 && !existingBadgeNames.includes('First Download')) {
+    const badge = { name: 'First Download', icon: '⬇️', earnedAt: new Date() };
+    user.badges.push(badge);
+    newBadges.push(badge);
+  }
+  
+  // Badge: Download Expert (5 downloads)
+  if (user.stats.resumesDownloaded >= 5 && !existingBadgeNames.includes('Download Expert')) {
+    const badge = { name: 'Download Expert', icon: '📥', earnedAt: new Date() };
+    user.badges.push(badge);
+    newBadges.push(badge);
+  }
+  
   // Badge: Social Connector (followed all 5 platforms)
   const followedPlatforms = Object.values(user.socialMediaFollows).filter(Boolean).length;
   if (followedPlatforms >= 5 && !existingBadgeNames.includes('Social Connector')) {
@@ -435,8 +449,30 @@ export const deductPoints = async (req, res) => {
       metadata
     );
 
-    // Note: No Activity record created for spending - spending is tracked in Transactions only
-    // Activity model is for earning activities only
+    // Create Activity record for resume downloads to show in activity history
+    if (activityType === "SPEND_CV_DOWNLOAD") {
+      await Activity.create({
+        user: userId,
+        type: 'RESUME_DOWNLOADED',
+        points: amount,
+        description: description,
+        metadata: metadata
+      });
+      
+      // Check and award download-related badges
+      const newBadges = await checkAndAwardBadges(user);
+      
+      // Create activity records for new badges
+      for (const badge of newBadges) {
+        await Activity.create({
+          user: userId,
+          type: 'BADGE_EARNED',
+          points: 0,
+          description: `Earned badge: ${badge.name}`,
+          metadata: { badgeName: badge.name }
+        });
+      }
+    }
 
     return res.status(200).json({
       message: "Points deducted successfully",
