@@ -38,6 +38,14 @@ export const getUnlockCost = (templateType) => {
   return templateConfig.unlockCost;
 };
 
+// Helper: Check if template needs to be unlocked
+export const needsUnlock = (templateType) => {
+  const templateConfig = TEMPLATE_TIERS[templateType];
+  if (!templateConfig) return false;
+  return templateConfig.tier !== "FREE";
+};
+
+
 // Main function: Deduct points with transaction logging
 export const deductPointsWithTransaction = async (userId, amount, type, description, metadata = {}) => {
   // Start a session for transaction
