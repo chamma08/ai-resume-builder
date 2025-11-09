@@ -178,7 +178,7 @@ export const updateResume = async (req, res) => {
         user.stats.profileCompleted = true;
         
         // Award points for profile completion
-        const profilePoints = 100;
+        const profilePoints = 50;
         await user.addPoints(profilePoints, 'PROFILE_COMPLETE');
         await user.save();
         

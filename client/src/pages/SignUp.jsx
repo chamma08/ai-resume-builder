@@ -69,7 +69,7 @@ export default function SignUp() {
         toast.success(
           <div>
             <p className="font-bold">Welcome! 🎉</p>
-            <p>You've earned 50 bonus points for signing up!</p>
+            <p>You've earned 25 bonus points for signing up!</p>
             {formData.referralCode && (
               <p className="text-sm mt-1">Referral bonus applied! 🎁</p>
             )}

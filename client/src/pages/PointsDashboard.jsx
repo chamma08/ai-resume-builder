@@ -1,33 +1,33 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { 
-  fetchUserPoints, 
-  recordSocialFollow, 
-  generateReferralCode 
-} from '../redux/features/pointsSlice';
-import { 
-  Trophy, 
-  TrendingUp, 
-  Award, 
-  Share2, 
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchUserPoints,
+  recordSocialFollow,
+  generateReferralCode,
+} from "../redux/features/pointsSlice";
+import {
+  Trophy,
+  TrendingUp,
+  Award,
+  Share2,
   Gift,
   Star,
   Crown,
-  Sparkles
-} from 'lucide-react';
-import { toast } from 'react-toastify';
+  Sparkles,
+} from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function PointsDashboard() {
   const dispatch = useDispatch();
-  const { 
-    points, 
-    level, 
-    badges, 
-    stats, 
-    socialMediaFollows, 
-    referralCode, 
+  const {
+    points,
+    level,
+    badges,
+    stats,
+    socialMediaFollows,
+    referralCode,
     progress,
-    loading 
+    loading,
   } = useSelector((state) => state.points);
 
   const [followLoading, setFollowLoading] = useState({});
@@ -41,7 +41,7 @@ export default function PointsDashboard() {
   // Countdown effect
   useEffect(() => {
     const intervals = {};
-    
+
     Object.keys(countdowns).forEach((platform) => {
       if (countdowns[platform] > 0) {
         intervals[platform] = setInterval(() => {
@@ -64,11 +64,15 @@ export default function PointsDashboard() {
 
   // Level configuration
   const levelConfig = {
-    Bronze: { color: 'from-orange-700 to-orange-500', icon: Trophy, next: 100 },
-    Silver: { color: 'from-gray-400 to-gray-200', icon: Award, next: 300 },
-    Gold: { color: 'from-yellow-500 to-yellow-300', icon: Star, next: 600 },
-    Platinum: { color: 'from-cyan-500 to-blue-400', icon: Crown, next: 1000 },
-    Diamond: { color: 'from-purple-600 to-pink-400', icon: Sparkles, next: Infinity }
+    Bronze: { color: "from-orange-700 to-orange-500", icon: Trophy, next: 100 },
+    Silver: { color: "from-gray-400 to-gray-200", icon: Award, next: 300 },
+    Gold: { color: "from-yellow-500 to-yellow-300", icon: Star, next: 600 },
+    Platinum: { color: "from-cyan-500 to-blue-400", icon: Crown, next: 1000 },
+    Diamond: {
+      color: "from-purple-600 to-pink-400",
+      icon: Sparkles,
+      next: Infinity,
+    },
   };
 
   const currentLevelInfo = levelConfig[level] || levelConfig.Bronze;
@@ -77,30 +81,60 @@ export default function PointsDashboard() {
   // Social media platforms
   const socialPlatforms = [
     /* { id: 'twitter', name: 'Twitter', icon: '𝕏', url: 'https://twitter.com/yourhandle', color: 'bg-black' }, */
-    { id: 'linkedin', name: 'LinkedIn', icon: 'in', url: 'https://www.linkedin.com/company/job-labs-sri-lanka/', color: 'bg-blue-600' },
-    { id: 'facebook', name: 'Facebook', icon: 'f', url: 'https://www.facebook.com/share/17LDn2cdnr/?mibextid=wwXIfr', color: 'bg-blue-700' },
-    { id: 'instagram', name: 'Instagram', icon: '📷', url: 'https://www.instagram.com/job.labs?igsh=bDM5N2ZsYmZ5eGJx', color: 'bg-gradient-to-r from-purple-500 to-pink-500' },
-    { id: 'youtube', name: 'YouTube', icon: '▶', url: 'https://www.youtube.com/channel/UCIeo4mgjR8gOGxnrmAmpRhw/featured', color: 'bg-red-600' }
+    {
+      id: "linkedin",
+      name: "LinkedIn",
+      icon: "in",
+      url: "https://www.linkedin.com/company/job-labs-sri-lanka/",
+      color: "bg-blue-600",
+    },
+    {
+      id: "facebook",
+      name: "Facebook",
+      icon: "f",
+      url: "https://www.facebook.com/share/17LDn2cdnr/?mibextid=wwXIfr",
+      color: "bg-blue-700",
+    },
+    {
+      id: "instagram",
+      name: "Instagram",
+      icon: "📷",
+      url: "https://www.instagram.com/job.labs?igsh=bDM5N2ZsYmZ5eGJx",
+      color: "bg-gradient-to-r from-purple-500 to-pink-500",
+    },
+    {
+      id: "youtube",
+      name: "YouTube",
+      icon: "▶",
+      url: "https://www.youtube.com/channel/UCIeo4mgjR8gOGxnrmAmpRhw/featured",
+      color: "bg-red-600",
+    },
   ];
 
   const handleSocialFollow = async (platform) => {
     // Check if user has clicked the link and waited
     if (!clickedLinks[platform]) {
-      toast.warning(`Please click the ${platform} link above first to follow us!`);
+      toast.warning(
+        `Please click the ${platform} link above first to follow us!`
+      );
       return;
     }
 
     if (countdowns[platform] && countdowns[platform] > 0) {
-      toast.info(`Please wait ${countdowns[platform]} seconds after following...`);
+      toast.info(
+        `Please wait ${countdowns[platform]} seconds after following...`
+      );
       return;
     }
 
     setFollowLoading({ ...followLoading, [platform]: true });
     try {
       await dispatch(recordSocialFollow({ platform })).unwrap();
-      toast.success(`Thank you for following us on ${platform}! +1 point earned! 🎉`);
+      toast.success(
+        `Thank you for following us on ${platform}! +10 points earned! 🎉`
+      );
     } catch (error) {
-      toast.error(error || 'Failed to record follow');
+      toast.error(error || "Failed to record follow");
     } finally {
       setFollowLoading({ ...followLoading, [platform]: false });
     }
@@ -109,21 +143,24 @@ export default function PointsDashboard() {
   const handleSocialLinkClick = (platformId, platformName) => {
     // Mark that user clicked the link
     setClickedLinks((prev) => ({ ...prev, [platformId]: true }));
-    
+
     // Start countdown (15 seconds to give time for user to follow)
     setCountdowns((prev) => ({ ...prev, [platformId]: 15 }));
-    
-    toast.info(`Please follow us on ${platformName} and return to claim your points!`, {
-      autoClose: 5000,
-    });
+
+    toast.info(
+      `Please follow us on ${platformName} and return to claim your points!`,
+      {
+        autoClose: 5000,
+      }
+    );
   };
 
   const handleGenerateReferral = async () => {
     try {
       await dispatch(generateReferralCode()).unwrap();
-      toast.success('Referral code generated!');
+      toast.success("Referral code generated!");
     } catch (error) {
-      toast.error('Failed to generate referral code');
+      toast.error("Failed to generate referral code");
     }
   };
 
@@ -143,7 +180,9 @@ export default function PointsDashboard() {
       </h1>
 
       {/* Points & Level Card */}
-      <div className={`bg-linear-to-r ${currentLevelInfo.color} rounded-lg shadow-lg p-8 text-white mb-8`}>
+      <div
+        className={`bg-linear-to-r ${currentLevelInfo.color} rounded-lg shadow-lg p-8 text-white mb-8`}
+      >
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold mb-2">Your Progress</h2>
@@ -154,7 +193,7 @@ export default function PointsDashboard() {
             <p className="text-lg mt-2 opacity-90">Level: {level}</p>
           </div>
           <div className="text-right">
-            {level !== 'Diamond' && (
+            {level !== "Diamond" && (
               <>
                 <p className="text-sm opacity-80">Next Level</p>
                 <p className="text-3xl font-bold">{currentLevelInfo.next}</p>
@@ -164,9 +203,9 @@ export default function PointsDashboard() {
         </div>
 
         {/* Progress Bar */}
-        {level !== 'Diamond' && (
+        {level !== "Diamond" && (
           <div className="w-full bg-white/30 rounded-full h-4 overflow-hidden">
-            <div 
+            <div
               className="bg-white h-full rounded-full transition-all duration-500 flex items-center justify-end pr-2"
               style={{ width: `${progress}%` }}
             >
@@ -186,8 +225,8 @@ export default function PointsDashboard() {
           <div className="grid grid-cols-2 gap-4">
             {badges.length > 0 ? (
               badges.map((badge, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="bg-linear-to-br from-purple-50 to-blue-50 rounded-lg p-4 text-center border-2 border-purple-200"
                 >
                   <div className="text-4xl mb-2">{badge.icon}</div>
@@ -214,23 +253,33 @@ export default function PointsDashboard() {
           <div className="space-y-4">
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
               <span className="font-medium">Resumes Created</span>
-              <span className="text-2xl font-bold text-blue-600">{stats.resumesCreated || 0}</span>
+              <span className="text-2xl font-bold text-blue-600">
+                {stats.resumesCreated || 0}
+              </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
               <span className="font-medium">Resumes Downloaded</span>
-              <span className="text-2xl font-bold text-green-600">{stats.resumesDownloaded || 0}</span>
+              <span className="text-2xl font-bold text-green-600">
+                {stats.resumesDownloaded || 0}
+              </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
               <span className="font-medium">Profile Status</span>
-              <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                stats.profileCompleted ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-              }`}>
-                {stats.profileCompleted ? 'Complete' : 'Incomplete'}
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                  stats.profileCompleted
+                    ? "bg-green-100 text-green-700"
+                    : "bg-yellow-100 text-yellow-700"
+                }`}
+              >
+                {stats.profileCompleted ? "Complete" : "Incomplete"}
               </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
               <span className="font-medium">Login Streak</span>
-              <span className="text-2xl font-bold text-orange-600">{stats.dailyLoginStreak || 0} days</span>
+              <span className="text-2xl font-bold text-orange-600">
+                {stats.dailyLoginStreak || 0} days
+              </span>
             </div>
           </div>
         </div>
@@ -242,11 +291,14 @@ export default function PointsDashboard() {
           <Share2 className="text-blue-500" />
           Follow Us & Earn Points
         </h3>
-        <p className="text-gray-600 mb-2">Follow us on social media to earn 1 point per platform!</p>
-        <p className="text-sm text-orange-600 font-semibold mb-6">
-          📌 Click the social media button → Follow our account → Wait 15 seconds → Claim your points!
+        <p className="text-gray-600 mb-2">
+          Follow us on social media to earn 10 points per platform!
         </p>
-        
+        <p className="text-sm text-orange-600 font-semibold mb-6">
+          📌 Click the social media button → Follow our account → Wait 15
+          seconds → Claim your points!
+        </p>
+
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {socialPlatforms.map((platform) => {
             const isFollowed = socialMediaFollows?.[platform.id];
@@ -258,7 +310,9 @@ export default function PointsDashboard() {
                   href={platform.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => handleSocialLinkClick(platform.id, platform.name)}
+                  onClick={() =>
+                    handleSocialLinkClick(platform.id, platform.name)
+                  }
                   className={`${platform.color} text-white rounded-lg p-4 block mb-2 hover:opacity-90 transition-opacity`}
                 >
                   <div className="text-3xl mb-2">{platform.icon}</div>
@@ -266,24 +320,26 @@ export default function PointsDashboard() {
                 </a>
                 <button
                   onClick={() => handleSocialFollow(platform.id)}
-                  disabled={isFollowed || isLoading || (countdowns[platform.id] > 0)}
+                  disabled={
+                    isFollowed || isLoading || countdowns[platform.id] > 0
+                  }
                   className={`w-full py-2 px-4 rounded text-sm font-semibold transition-colors ${
-                    isFollowed 
-                      ? 'bg-green-100 text-green-700 cursor-not-allowed' 
-                      : (countdowns[platform.id] > 0)
-                      ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                    isFollowed
+                      ? "bg-green-100 text-green-700 cursor-not-allowed"
+                      : countdowns[platform.id] > 0
+                      ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                      : "bg-blue-500 text-white hover:bg-blue-600"
                   }`}
                 >
-                  {isLoading 
-                    ? 'Processing...' 
-                    : isFollowed 
-                    ? 'Followed ✓' 
+                  {isLoading
+                    ? "Processing..."
+                    : isFollowed
+                    ? "Followed ✓"
                     : countdowns[platform.id] > 0
                     ? `Wait ${countdowns[platform.id]}s`
                     : clickedLinks[platform.id]
-                    ? 'Claim +1pt'
-                    : 'Follow First'}
+                    ? "Claim +10pt"
+                    : "Follow First"}
                 </button>
               </div>
             );
@@ -298,9 +354,11 @@ export default function PointsDashboard() {
           Referral Program
         </h3>
         <p className="text-gray-700 mb-4">
-          Invite friends and earn <span className="font-bold text-green-600">200 points</span> for each successful referral!
+          Invite friends and earn{" "}
+          <span className="font-bold text-green-600">200 points</span> for each
+          successful referral!
         </p>
-        
+
         {referralCode ? (
           <div className="bg-white rounded-lg p-4 border-2 border-green-200">
             <p className="text-sm text-gray-600 mb-2">Your Referral Code:</p>
@@ -314,7 +372,7 @@ export default function PointsDashboard() {
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(referralCode);
-                  toast.success('Referral code copied!');
+                  toast.success("Referral code copied!");
                 }}
                 className="px-6 py-2 bg-green-500 text-white rounded font-semibold hover:bg-green-600 transition-colors"
               >
@@ -322,7 +380,8 @@ export default function PointsDashboard() {
               </button>
             </div>
             <p className="text-sm text-gray-500 mt-2">
-              Share this code with friends. They enter it during signup, and you both benefit!
+              Share this code with friends. They enter it during signup, and you
+              both benefit!
             </p>
           </div>
         ) : (
@@ -340,23 +399,20 @@ export default function PointsDashboard() {
         <h3 className="text-2xl font-bold mb-6">How to Earn Points</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="p-4 bg-blue-50 rounded-lg">
-            <p className="font-bold text-blue-700 mb-2">+50 Points</p>
+            <p className="font-bold text-blue-700 mb-2">+25 Points</p>
             <p className="text-sm text-gray-700">Create an account</p>
           </div>
           <div className="p-4 bg-green-50 rounded-lg">
-            <p className="font-bold text-green-700 mb-2">+100 Points</p>
+            <p className="font-bold text-green-700 mb-2">+50 Points</p>
             <p className="text-sm text-gray-700">Complete your profile</p>
           </div>
           <div className="p-4 bg-purple-50 rounded-lg">
-            <p className="font-bold text-purple-700 mb-2">+50 Points</p>
-            <p className="text-sm text-gray-700">Create a resume</p>
+            <p className="font-bold text-purple-700 mb-2">+25 Points</p>
+            <p className="text-sm text-gray-700">Create first resume</p>
           </div>
-          <div className="p-4 bg-orange-50 rounded-lg">
-            <p className="font-bold text-orange-700 mb-2">+20 Points</p>
-            <p className="text-sm text-gray-700">Download a resume</p>
-          </div>
+
           <div className="p-4 bg-pink-50 rounded-lg">
-            <p className="font-bold text-pink-700 mb-2">+1 Point</p>
+            <p className="font-bold text-pink-700 mb-2">+10 Points</p>
             <p className="text-sm text-gray-700">Follow on social media</p>
           </div>
           <div className="p-4 bg-yellow-50 rounded-lg">
