@@ -324,7 +324,7 @@ export const applyReferralCode = async (userId, referralCode) => {
   }
 };
 
-// Helper: Get activity description
+/* // Helper: Get activity description
 function getActivityDescription(activityType, metadata = {}) {
   const descriptions = {
     SIGNUP: 'Welcome! Account created',
@@ -337,6 +337,26 @@ function getActivityDescription(activityType, metadata = {}) {
     LEVEL_UP: `Leveled up to ${metadata.newLevel}`
   };
   return descriptions[activityType] || 'Activity completed';
+} */
+
+  // Helper function for activity descriptions
+function getActivityDescription(activityType, metadata) {
+  const descriptions = {
+    SIGNUP: "Welcome bonus for signing up",
+    PROFILE_COMPLETE: "Bonus for completing your profile",
+    RESUME_CREATED: metadata.isFirst 
+      ? "First resume created bonus" 
+      : "Created a new resume",
+    SOCIAL_FOLLOW: `Followed us on ${metadata.platform}`,
+    REFERRAL: `Referred ${metadata.referredUserName || "a friend"}`,
+    DAILY_LOGIN: "Daily login bonus",
+    LEVEL_UP: `Leveled up to ${metadata.newLevel}`,
+    SPEND_CV_DOWNLOAD: `Downloaded CV using ${metadata.templateType} template`,
+    SPEND_TEMPLATE_UNLOCK: `Unlocked ${metadata.templateType} template`,
+    SPEND_AI_SUGGESTION: "Used AI suggestion feature",
+  };
+  
+  return descriptions[activityType] || "Point transaction";
 }
 
 // Helper: Check and award badges
@@ -498,22 +518,3 @@ export const getTemplateDownloadCost = async (req, res) => {
   }
 };
 
-// Helper function for activity descriptions
-function getActivityDescription(activityType, metadata) {
-  const descriptions = {
-    SIGNUP: "Welcome bonus for signing up",
-    PROFILE_COMPLETE: "Bonus for completing your profile",
-    RESUME_CREATED: metadata.isFirst 
-      ? "First resume created bonus" 
-      : "Created a new resume",
-    SOCIAL_FOLLOW: `Followed us on ${metadata.platform}`,
-    REFERRAL: `Referred ${metadata.referredUserName || "a friend"}`,
-    DAILY_LOGIN: "Daily login bonus",
-    LEVEL_UP: `Leveled up to ${metadata.newLevel}`,
-    SPEND_CV_DOWNLOAD: `Downloaded CV using ${metadata.templateType} template`,
-    SPEND_TEMPLATE_UNLOCK: `Unlocked ${metadata.templateType} template`,
-    SPEND_AI_SUGGESTION: "Used AI suggestion feature",
-  };
-  
-  return descriptions[activityType] || "Point transaction";
-}
