@@ -449,18 +449,24 @@ export const deductPoints = async (req, res) => {
       metadata
     );
 
+    let newBadges = [];
+
     // Create Activity record for resume downloads to show in activity history
     if (activityType === "SPEND_CV_DOWNLOAD") {
+      // Update download stats BEFORE checking for badges
+      user.stats.resumesDownloaded += 1;
+      await user.save();
+      
       await Activity.create({
         user: userId,
         type: 'RESUME_DOWNLOADED',
-        points: amount,
+        points: -amount, // Negative to show deduction
         description: description,
         metadata: metadata
       });
       
-      // Check and award download-related badges
-      const newBadges = await checkAndAwardBadges(user);
+      // Check and award download-related badges (now stats are updated)
+      newBadges = await checkAndAwardBadges(user);
       
       // Create activity records for new badges
       for (const badge of newBadges) {
@@ -481,6 +487,7 @@ export const deductPoints = async (req, res) => {
         previousBalance: result.balanceBefore,
         currentBalance: result.currentBalance,
         transaction: result.transaction,
+        newBadges: newBadges, // Include any badges earned
       },
     });
 
