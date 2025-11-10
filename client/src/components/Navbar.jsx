@@ -37,17 +37,15 @@ export default function Navbar() {
           to="/"
           className="flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 z-50"
         >
-          <img src={logo} alt="Logo" className="h-10 sm:h-12 w-auto drop-shadow-md" />
+          <img
+            src={logo}
+            alt="Logo"
+            className="h-10 sm:h-12 w-auto drop-shadow-md"
+          />
         </Link>
 
         {/* Desktop Navigation Links */}
         <div className="hidden lg:flex gap-2 items-center">
-          <Link
-            to="/app"
-            className="flex items-center gap-2 px-3 xl:px-4 py-2.5 rounded-lg font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 border-2 border-transparent hover:border-blue-200"
-          >
-            Dashboard
-          </Link>
           <Link
             to="/app/points"
             className="flex items-center gap-2 px-3 xl:px-4 py-2.5 rounded-lg font-medium text-slate-700 hover:bg-amber-50 hover:text-amber-600 transition-all duration-200 border-2 border-transparent hover:border-amber-200"
@@ -55,13 +53,13 @@ export default function Navbar() {
             <Trophy size={18} className="text-amber-500" />
             Points
           </Link>
-          {/* <Link
+          <Link
             to="/app/leaderboard"
             className="flex items-center gap-2 px-3 xl:px-4 py-2.5 rounded-lg font-medium text-slate-700 hover:bg-green-50 hover:text-green-600 transition-all duration-200 border-2 border-transparent hover:border-green-200"
           >
             <TrendingUp size={18} className="text-green-500" />
             Leaderboard
-          </Link> */}
+          </Link>
           <Link
             to="/app/activity"
             className="flex items-center gap-2 px-3 xl:px-4 py-2.5 rounded-lg font-medium text-slate-700 hover:bg-purple-50 hover:text-purple-600 transition-all duration-200 border-2 border-transparent hover:border-purple-200"
@@ -134,17 +132,6 @@ export default function Navbar() {
 
             {/* Mobile Navigation Links */}
             <nav className="flex-1 space-y-2">
-              <Link
-                to="/app"
-                onClick={closeMobileMenu}
-                className="flex items-center gap-3 px-4 py-3.5 rounded-lg font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200 border-2 border-transparent hover:border-blue-200"
-              >
-                <div className="w-8 h-8 flex items-center justify-center bg-blue-100 rounded-lg">
-                  <span className="text-blue-600 text-lg font-bold">📊</span>
-                </div>
-                <span>Dashboard</span>
-              </Link>
-
               <Link
                 to="/app/points"
                 onClick={closeMobileMenu}
