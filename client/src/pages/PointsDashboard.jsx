@@ -344,7 +344,7 @@ export default function PointsDashboard() {
             onClick={() =>
               handleSocialLinkClick(platform.id, platform.name)
             }
-            className={`${platform.color} text-white rounded-lg p-3 sm:p-4 block mb-2 hover:opacity-90 transition-opacity flex flex-col items-center justify-center`}
+            className={`${platform.color} text-white rounded-lg p-3 sm:p-4 block mb-2 hover:opacity-90 transition-opacity flex-col items-center justify-center`}
               >
             <div className="mb-1 sm:mb-2">{getIconSvg(platform.id)}</div>
             <p className="text-xs sm:text-sm font-semibold">{platform.name}</p>
