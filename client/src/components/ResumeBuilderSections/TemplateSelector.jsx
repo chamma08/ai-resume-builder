@@ -1,14 +1,17 @@
-import { Check, Layout, Lock, Crown } from "lucide-react";
+import { Check, Layout, Lock, Crown, Eye } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserPoints } from "../../redux/features/pointsSlice";
 import UnlockTemplateModal from "../modals/UnlockTemplateModal";
+import TemplatePreviewModal from "../modals/TemplatePreviewModal";
 import API from "../../configs/api";
 
-export default function TemplateSelector({ selectedTemplate, onChange }) {
+export default function TemplateSelector({ selectedTemplate, onChange, resumeData }) {
   const [isOpen, setIsOpen] = useState(false);
   const [unlockModalOpen, setUnlockModalOpen] = useState(false);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const [selectedToUnlock, setSelectedToUnlock] = useState(null);
+  const [selectedToPreview, setSelectedToPreview] = useState(null);
   const [unlockedTemplates, setUnlockedTemplates] = useState([]);
   const [loading, setLoading] = useState(false);
   
@@ -108,6 +111,12 @@ export default function TemplateSelector({ selectedTemplate, onChange }) {
       onChange(template.id);
       setIsOpen(false);
     }
+  };
+
+  const handlePreviewClick = (e, templateId) => {
+    e.stopPropagation(); // Prevent triggering handleTemplateClick
+    setSelectedToPreview(templateId);
+    setPreviewModalOpen(true);
   };
 
   const handleUnlockSuccess = () => {
@@ -244,10 +253,17 @@ export default function TemplateSelector({ selectedTemplate, onChange }) {
 
                           {/* Lock/Unlock Status */}
                           {isLocked && (
-                            <div className="flex items-center gap-2 text-xs">
+                            <div className="flex items-center gap-2 text-xs flex-wrap">
                               <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded font-semibold">
                                 🔓 {template.unlockCost} points to unlock
                               </span>
+                              <button
+                                onClick={(e) => handlePreviewClick(e, template.id)}
+                                className="flex items-center gap-1 bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-1 rounded font-medium transition-colors"
+                              >
+                                <Eye className="w-3 h-3" />
+                                <span>Preview</span>
+                              </button>
                             </div>
                           )}
 
@@ -284,6 +300,22 @@ export default function TemplateSelector({ selectedTemplate, onChange }) {
         }}
         templateId={selectedToUnlock}
         onSuccess={handleUnlockSuccess}
+      />
+
+      {/* Preview Modal */}
+      <TemplatePreviewModal
+        isOpen={previewModalOpen}
+        onClose={() => {
+          setPreviewModalOpen(false);
+          setSelectedToPreview(null);
+        }}
+        templateId={selectedToPreview}
+        resumeData={resumeData}
+        onUnlock={() => {
+          setPreviewModalOpen(false);
+          setSelectedToUnlock(selectedToPreview);
+          setUnlockModalOpen(true);
+        }}
       />
     </div>
   );

@@ -280,6 +280,7 @@ export default function ResumeBuilder() {
                     onChange={(template) =>
                       setResumeData((prev) => ({ ...prev, template }))
                     }
+                    resumeData={resumeData}
                   />
                   <ColorPicker
                     selectedColor={resumeData.accent_color}
