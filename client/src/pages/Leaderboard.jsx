@@ -71,7 +71,7 @@ export default function Leaderboard() {
           <h2 className="text-base sm:text-lg lg:text-xl font-bold mb-1 sm:mb-2 text-gray-800">Your Current Rank</h2>
           <p className="text-2xl sm:text-3xl font-bold text-red-800">#{userRank || '-'}</p>
             </div>
-            <Trophy size={48} className="text-blue-500 opacity-30 sm:w-16 sm:h-16" />
+            <Trophy size={48} className="text-red-900 opacity-30 sm:w-16 sm:h-16" />
           </div>
         </div>
 
