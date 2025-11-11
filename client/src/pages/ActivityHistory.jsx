@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchActivityHistory } from '../redux/features/pointsSlice';
-import * as LucideIcons from 'lucide-react';
-
-const Activity = LucideIcons.Activity;
-const Calendar = LucideIcons.Calendar;
-const TrendingUp = LucideIcons.TrendingUp;
-const Filter = LucideIcons.Filter;
+import { Activity, Calendar, TrendingUp, Filter } from 'lucide-react';
 
 export default function ActivityHistory() {
   const dispatch = useDispatch();

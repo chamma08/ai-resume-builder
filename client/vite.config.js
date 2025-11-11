@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  build: {
+  /* build: {
     // Enable aggressive minification
     minify: 'terser',
     terserOptions: {
@@ -65,7 +65,7 @@ export default defineConfig({
     target: 'es2020',
     // Report compressed size
     reportCompressedSize: true
-  },
+  }, */
   // Optimize dependencies
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', 'axios'],
