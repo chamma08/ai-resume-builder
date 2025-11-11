@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "analyze": "vite build && npx vite-bundle-visualizer",
+    "performance": "npm run build && npm run preview",
+    "check-images": "node scripts/optimize-images.js"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.9.2",

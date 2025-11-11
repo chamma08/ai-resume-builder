@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/job_logo.png";
+import logo from "../assets/job_logo.webp";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/features/authSlice";
 import {

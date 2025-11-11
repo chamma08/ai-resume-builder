@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
+import { useEffect, useState, lazy, Suspense } from "react";
+import { motion, useScroll, useSpring, LazyMotion, domAnimation } from "framer-motion";
 import { Home as HomeIcon } from "lucide-react"; // Lucide Home icon
 import Banner from "../components/home/Banner";
-import Features from "../components/home/Features";
-import Footer from "../components/home/Footer";
 import { Hero } from "../components/home/Hero";
-import Testimonial from "../components/home/Testimonial";
-import Contact from "../components/home/Contact";
-import GetStarted from "../components/home/Getstarted";
+
+// Lazy load non-critical components
+const Features = lazy(() => import("../components/home/Features"));
+const Testimonial = lazy(() => import("../components/home/Testimonial"));
+const Contact = lazy(() => import("../components/home/Contact"));
+const GetStarted = lazy(() => import("../components/home/Getstarted"));
+const Footer = lazy(() => import("../components/home/Footer"));
 
 export default function Home() {
   const { scrollYProgress } = useScroll();
@@ -86,70 +88,74 @@ export default function Home() {
       </motion.div>
 
       {/* Page sections */}
-      <div className="min-h-screen bg-linear-to-br from-gradient-pink to-gradient-blue">
-        <Banner onNavigate={scrollToSection} />
+      <LazyMotion features={domAnimation}>
+        <div className="min-h-screen bg-linear-to-br from-gradient-pink to-gradient-blue">
+          <Banner onNavigate={scrollToSection} />
 
-        <motion.div
-          id="hero"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <Hero />
-        </motion.div>
+          <motion.div
+            id="hero"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Hero />
+          </motion.div>
 
-        <motion.div
-          id="features"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="mt-32"
-        >
-          <Features />
-        </motion.div>
+          <Suspense fallback={<div className="h-32" />}>
+            <motion.div
+              id="features"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6 }}
+              className="mt-32"
+            >
+              <Features />
+            </motion.div>
 
-        <motion.div
-          id="testimonials"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="mt-10"
-        >
-          <Testimonial />
-        </motion.div>
+            <motion.div
+              id="testimonials"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6 }}
+              className="mt-10"
+            >
+              <Testimonial />
+            </motion.div>
 
-        <motion.div
-          id="contact"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-        >
-          <Contact />
-        </motion.div>
+            <motion.div
+              id="contact"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6 }}
+            >
+              <Contact />
+            </motion.div>
 
-        <motion.div
-          id="get-started"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-        >
-          <GetStarted />
-        </motion.div>
+            <motion.div
+              id="get-started"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6 }}
+            >
+              <GetStarted />
+            </motion.div>
 
-        <motion.div
-          id="footer"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-        >
-          <Footer />
-        </motion.div>
-      </div>
+            <motion.div
+              id="footer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.6 }}
+            >
+              <Footer />
+            </motion.div>
+          </Suspense>
+        </div>
+      </LazyMotion>
     </>
   );
 }

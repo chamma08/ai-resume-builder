@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import s1 from '../assets/s2.jpg';
-import logo from '../assets/job_logo.png';
+import logo from '../assets/job_logo.webp';
 import API from "../configs/api";
 import r1 from '../assets/r1.jpg';
 

@@ -4,8 +4,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { login, setLoading } from "../redux/features/authSlice";
-import s2 from "../assets/s1.jpg";
-import logo from "../assets/job_logo.png";
+import s2 from "../assets/s1.webp";
+import logo from "../assets/job_logo.webp";
 import API from "../configs/api";
 
 export default function SignUp() {

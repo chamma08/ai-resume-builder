@@ -2,7 +2,7 @@ import { Home, Eye, EyeOff, Lock, ShieldCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import logo from '../assets/job_logo.png';
+import logo from '../assets/job_logo.webp';
 import API from "../configs/api";
 import r2 from '../assets/r2.jpg';
 

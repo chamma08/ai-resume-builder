@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import logo from "../../assets/job_logo.png";
+import logo from "../../assets/job_logo.webp";
 import { useSelector } from "react-redux";
 
-import img1 from "../../assets/users/u1.png"
+import img1 from "../../assets/users/u1.webp"
 import img2 from "../../assets/users/u2.jpg"
 
 export const Hero = () => {
