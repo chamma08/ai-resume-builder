@@ -93,6 +93,46 @@ export const signIn = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
+    // Handle daily login streak
+    const now = new Date();
+    const lastLogin = user.stats.lastLoginDate;
+    
+    if (lastLogin) {
+      const lastLoginDate = new Date(lastLogin);
+      const daysDifference = Math.floor((now - lastLoginDate) / (1000 * 60 * 60 * 24));
+      
+      if (daysDifference === 1) {
+        // Consecutive day login - increment streak
+        user.stats.dailyLoginStreak += 1;
+        user.stats.lastLoginDate = now;
+        
+        // Award daily login points
+        await user.addPoints(10, "DAILY_LOGIN");
+        
+        // Create daily login activity
+        await Activity.create({
+          user: user._id,
+          type: "DAILY_LOGIN",
+          points: 10,
+          description: `Daily login streak: ${user.stats.dailyLoginStreak} days`,
+          metadata: { streak: user.stats.dailyLoginStreak }
+        });
+        
+      } else if (daysDifference > 1) {
+        // Streak broken - reset to 1
+        user.stats.dailyLoginStreak = 1;
+        user.stats.lastLoginDate = now;
+      }
+      // If daysDifference === 0, it's the same day, don't change streak or award points
+      
+    } else {
+      // First time login tracking
+      user.stats.dailyLoginStreak = 1;
+      user.stats.lastLoginDate = now;
+    }
+    
+    await user.save();
+
     const token = generateToken(user._id);
 
     return res.status(200).json({

@@ -10,6 +10,7 @@ router.post("/forgot-password", forgotPassword);
 router.post("/verify-otp", verifyOTP);
 router.post("/reset-password", resetPassword);
 router.get("/get-user", protect, getUserById);
+router.get("/me", protect, getUserById); // Add /me route for consistency
 
 router.get("/get-resumes", protect, getUserResumes);
 

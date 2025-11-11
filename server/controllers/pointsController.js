@@ -449,18 +449,24 @@ export const deductPoints = async (req, res) => {
       metadata
     );
 
+    let newBadges = [];
+
     // Create Activity record for resume downloads to show in activity history
     if (activityType === "SPEND_CV_DOWNLOAD") {
+      // Update download stats BEFORE checking for badges
+      user.stats.resumesDownloaded += 1;
+      await user.save();
+      
       await Activity.create({
         user: userId,
         type: 'RESUME_DOWNLOADED',
-        points: amount,
+        points: -amount, // Negative to show deduction
         description: description,
         metadata: metadata
       });
       
-      // Check and award download-related badges
-      const newBadges = await checkAndAwardBadges(user);
+      // Check and award download-related badges (now stats are updated)
+      newBadges = await checkAndAwardBadges(user);
       
       // Create activity records for new badges
       for (const badge of newBadges) {
@@ -481,6 +487,7 @@ export const deductPoints = async (req, res) => {
         previousBalance: result.balanceBefore,
         currentBalance: result.currentBalance,
         transaction: result.transaction,
+        newBadges: newBadges, // Include any badges earned
       },
     });
 
@@ -545,6 +552,89 @@ export const getTemplateDownloadCost = async (req, res) => {
   } catch (error) {
     console.error("Get template cost error:", error);
     return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// NEW: Unlock template with points
+export const unlockTemplate = async (req, res) => {
+  try {
+    const { templateId } = req.body;
+    const userId = req.userId;
+    
+    // Get user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    // Validate template exists
+    const tierInfo = TEMPLATE_TIERS[templateId];
+    if (!tierInfo) {
+      return res.status(404).json({ message: "Template not found" });
+    }
+    
+    // Check if it's a free template
+    if (!needsUnlock(templateId)) {
+      return res.status(400).json({ message: "This template is already free" });
+    }
+    
+    // Check if already unlocked
+    if (user.hasTemplateUnlocked(templateId)) {
+      return res.status(400).json({ message: "Template already unlocked" });
+    }
+    
+    const unlockCost = getUnlockCost(templateId);
+    
+    // Check balance
+    if (!user.hasEnoughPoints(unlockCost)) {
+      return res.status(402).json({
+        message: `Insufficient points. You need ${unlockCost} points to unlock this template.`,
+        error: "INSUFFICIENT_POINTS",
+        required: unlockCost,
+        current: user.points,
+        shortfall: unlockCost - user.points,
+      });
+    }
+    
+    // Deduct points and create transaction
+    const transactionResult = await deductPointsWithTransaction(
+      userId,
+      unlockCost,
+      "SPEND_TEMPLATE_UNLOCK",
+      `Unlocked ${templateId} template`,
+      {
+        templateId,
+        templateTier: tierInfo.tier,
+      }
+    );
+    
+    // Unlock template for user
+    await user.unlockTemplate(templateId, unlockCost);
+    
+    // Create activity record
+    await Activity.create({
+      user: userId,
+      type: 'RESUME_DOWNLOADED', // Using existing type for activity feed
+      points: -unlockCost,
+      description: `Unlocked ${templateId} template`,
+      metadata: { templateId, action: 'unlock' }
+    });
+    
+    return res.status(200).json({
+      message: `${templateId} template unlocked successfully!`,
+      data: {
+        templateId,
+        cost: unlockCost,
+        remainingBalance: transactionResult.currentBalance,
+        transaction: transactionResult.transaction,
+      },
+    });
+    
+  } catch (error) {
+    console.error("Unlock template error:", error);
+    return res.status(500).json({ 
+      message: error.message || "Failed to unlock template" 
+    });
   }
 };
 

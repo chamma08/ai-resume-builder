@@ -1,6 +1,6 @@
 import express from 'express';
 import { protect } from '../middlewares/authMiddleware.js';
-import { awardPoints, checkBalance, deductPoints, generateReferralCode, getActivityHistory, getLeaderboard, getTemplateDownloadCost, getUserPoints, recordSocialFollow } from '../controllers/pointsController.js';
+import { awardPoints, checkBalance, deductPoints, generateReferralCode, getActivityHistory, getLeaderboard, getTemplateDownloadCost, getUserPoints, recordSocialFollow, unlockTemplate } from '../controllers/pointsController.js';
 
 const router = express.Router();
 
@@ -24,8 +24,12 @@ router.post('/follow', recordSocialFollow);
 // Generate/get referral code
 router.get('/referral-code', generateReferralCode);
 
+// Points spending
 router.post('/deduct', deductPoints);
 router.get('/check-balance', checkBalance);
 router.get('/template-cost/:templateType', getTemplateDownloadCost);
+
+// Template unlock
+router.post('/unlock-template', unlockTemplate);
 
 export default router;
