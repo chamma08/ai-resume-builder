@@ -195,7 +195,7 @@ export default function Footer() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-xs sm:text-sm text-gray-400 text-center md:text-left">
-              © 2025 <span className="text-gray-400">Job Labs</span>. All Rights
+              © {new Date().getFullYear()} <span className="text-gray-400">Job Labs</span>. All Rights
               Reserved.
             </p>
             <div className="flex flex-wrap justify-center md:justify-end gap-4 sm:gap-6 text-xs sm:text-sm">
