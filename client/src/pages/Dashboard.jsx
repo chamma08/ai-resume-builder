@@ -107,7 +107,16 @@ export default function Dashboard() {
     e.preventDefault();
     setIsLoading(true);
     try {
+      console.log("Starting PDF text extraction...");
       const resumeText = await pdfTotext(resume);
+      console.log("PDF text extracted, length:", resumeText?.length);
+      
+      if (!resumeText || resumeText.trim().length === 0) {
+        toast.error("Could not extract text from PDF. Please ensure the PDF contains text.");
+        return;
+      }
+      
+      console.log("Uploading resume to server...");
       const { data } = await API.post(
         "/api/ai/upload-resume",
         { title, resumeText },
@@ -117,6 +126,9 @@ export default function Dashboard() {
           },
         }
       );
+      
+      console.log("Resume uploaded successfully:", data);
+      
       setTitle("");
       setResume(null);
       setShowUploadResume(false);
@@ -146,7 +158,19 @@ export default function Dashboard() {
       navigate(`/app/builder/${data.resumeId}`);
     } catch (error) {
       console.error("Error uploading resume:", error);
-      toast.error("Failed to upload resume. Please try again.");
+      
+      // More specific error messages
+      if (error.response) {
+        const errorMsg = error.response.data?.message || "Failed to upload resume";
+        toast.error(errorMsg);
+        console.error("Server error:", error.response.status, error.response.data);
+      } else if (error.request) {
+        toast.error("Could not connect to server. Please check your connection.");
+        console.error("Network error:", error.request);
+      } else {
+        toast.error("Failed to upload resume. Please try again.");
+        console.error("Upload error:", error.message);
+      }
     } finally {
       setIsLoading(false);
     }
