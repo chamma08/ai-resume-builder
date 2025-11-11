@@ -11,6 +11,10 @@ import API from "../configs/api";
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -20,16 +24,47 @@ export default function SignIn() {
     password: "",
   });
 
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  }
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+    
+    // Clear errors when user starts typing
+    if (errors[id]) {
+      setErrors({ ...errors, [id]: "" });
+    }
+  };
 
   const handleSubmit = async(e) => {
     e.preventDefault();
     
+    // Reset errors
+    const newErrors = {
+      email: "",
+      password: "",
+    };
+
     // Validation
-    if (!formData.email || !formData.password) {
-      toast.error("Please fill in all fields", {
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    // If there are validation errors, show them
+    if (newErrors.email || newErrors.password) {
+      setErrors(newErrors);
+      toast.error("Credentials are invalid", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -40,25 +75,71 @@ export default function SignIn() {
     try {
       const { data } = await API.post("/api/users/sign-in", formData);
       if (data.status === 200 || data.token) {
-        toast.success("Login successful!", {
+        toast.success("Login successful! Welcome back! 🎉", {
           position: "top-right",
           autoClose: 3000,
         });
         localStorage.setItem("token", data.token);
         dispatch(login({ user: data.user, token: data.token }));
         setFormData({ email: "", password: "" });
+        setErrors({ email: "", password: "" });
         setTimeout(() => {
           navigate("/app");
         }, 1000);
       }
     } catch (error) {
       console.error("Sign in error:", error);
-      const errorMessage =
-        error.response?.data?.message || "Failed to log in. Please try again.";
-      toast.error(errorMessage, {
-        position: "top-right",
-        autoClose: 4000,
-      });
+      const serverMessage = error.response?.data?.message;
+      
+      // Handle specific error cases
+      if (serverMessage === "Invalid credentials") {
+        // Set field-specific errors
+        setErrors({
+          email: "Account not found or incorrect credentials",
+          password: "Username or password is incorrect",
+        });
+        toast.error("❌ Invalid email or password. Please check your credentials.", {
+          position: "top-right",
+          autoClose: 4000,
+        });
+      } else if (serverMessage === "User already exists") {
+        setErrors({
+          email: "This email is already registered",
+          password: "",
+        });
+        toast.error("This email is already registered. Try signing in instead.", {
+          position: "top-right",
+          autoClose: 4000,
+        });
+      } else if (serverMessage === "All fields are required") {
+        toast.error("Please fill in all required fields", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      } else if (error.response?.status === 404) {
+        setErrors({
+          email: "Account not found with this email",
+          password: "",
+        });
+        toast.error("❌ Account not found. Please check your email or sign up.", {
+          position: "top-right",
+          autoClose: 4000,
+        });
+      } else if (error.response?.status === 401) {
+        setErrors({
+          email: "",
+          password: "Incorrect password",
+        });
+        toast.error("❌ Incorrect password. Please try again.", {
+          position: "top-right",
+          autoClose: 4000,
+        });
+      } else {
+        toast.error("Failed to sign in. Please try again later.", {
+          position: "top-right",
+          autoClose: 4000,
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -116,9 +197,21 @@ export default function SignIn() {
                 id="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition-all"
+                className={`w-full rounded-lg border px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base outline-none focus:ring-2 transition-all ${
+                  errors.email
+                    ? "border-red-500 focus:ring-red-500 bg-red-50"
+                    : "border-gray-300 focus:ring-red-900 focus:border-transparent"
+                }`}
                 required
               />
+              {errors.email && (
+                <div className="mt-1.5 flex items-center gap-1.5 text-red-600 text-xs">
+                  <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-medium">{errors.email}</span>
+                </div>
+              )}
             </div>
 
             <div>
@@ -132,7 +225,11 @@ export default function SignIn() {
                   id="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm sm:text-base outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition-all"
+                  className={`w-full rounded-lg border px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm sm:text-base outline-none focus:ring-2 transition-all ${
+                    errors.password
+                      ? "border-red-500 focus:ring-red-500 bg-red-50"
+                      : "border-gray-300 focus:ring-red-900 focus:border-transparent"
+                  }`}
                   required
                 />
                 <button
@@ -147,6 +244,14 @@ export default function SignIn() {
                   )}
                 </button>
               </div>
+              {errors.password && (
+                <div className="mt-1.5 flex items-center gap-1.5 text-red-600 text-xs">
+                  <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <span className="font-medium">{errors.password}</span>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 pt-1">
