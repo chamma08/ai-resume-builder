@@ -168,23 +168,41 @@ export const getLeaderboard = async (req, res) => {
   try {
     const { limit = 50, period = 'all' } = req.query;
     
+    // Fetch all users sorted by points
     const leaderboard = await User.find({})
       .select('name email points level badges')
-      .sort({ points: -1 })
+      .sort({ points: -1, createdAt: 1 }) // Sort by points descending, then by creation date for ties
       .limit(parseInt(limit))
       .lean();
     
-    // Add rank and mask email
-    const rankedLeaderboard = leaderboard.map((user, index) => ({
-      ...user,
-      rank: index + 1,
-      email: user.email.replace(/(.{2})(.*)(@.*)/, '$1***$3')
-    }));
+    // Add rank and mask email - handle ties properly
+    let currentRank = 1;
+    let previousPoints = null;
+    const rankedLeaderboard = leaderboard.map((user, index) => {
+      // If points are different from previous user, update rank
+      if (previousPoints !== null && user.points < previousPoints) {
+        currentRank = index + 1;
+      }
+      previousPoints = user.points;
+      
+      return {
+        ...user,
+        rank: currentRank,
+        email: user.email.replace(/(.{2})(.*)(@.*)/, '$1***$3')
+      };
+    });
     
-    // Get current user's rank
-    const currentUserRank = await User.countDocuments({
-      points: { $gt: req.user?.points || 0 }
-    }) + 1;
+    // Get current user's rank - fetch user first
+    let currentUserRank = null;
+    if (req.userId) {
+      const currentUser = await User.findById(req.userId).select('points');
+      if (currentUser) {
+        // Count users with more points
+        currentUserRank = await User.countDocuments({
+          points: { $gt: currentUser.points }
+        }) + 1;
+      }
+    }
     
     res.json({
       success: true,

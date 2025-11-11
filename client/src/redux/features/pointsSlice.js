@@ -208,9 +208,17 @@ const pointsSlice = createSlice({
       })
 
       // Fetch Leaderboard
+      .addCase(fetchLeaderboard.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(fetchLeaderboard.fulfilled, (state, action) => {
-        state.leaderboard = action.payload.leaderboard;
+        state.loading = false;
+        state.leaderboard = action.payload.leaderboard || [];
         state.userRank = action.payload.userRank;
+      })
+      .addCase(fetchLeaderboard.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
 
       // Record Social Follow
