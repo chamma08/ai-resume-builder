@@ -206,19 +206,23 @@ export const Hero = () => {
 
           {/* Animated Headline */}
           <motion.h1
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold max-w-5xl text-center mt-4 leading-tight sm:leading-snug md:leading-[70px] px-2 bg-clip-text text-transparent bg-linear-to-r from-[#AB8C95] via-[#000000] to-[#8E97C5]"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold max-w-5xl text-center mt-4 leading-tight sm:leading-snug md:leading-[70px] px-4 sm:px-2 bg-clip-text text-transparent bg-linear-to-r from-[#AB8C95] via-[#000000] to-[#8E97C5]"
             variants={containerVariants}
             initial="hidden"
             animate="visible"
           >
-            {renderAnimatedText(titleText)}
-            <span className="whitespace-nowrap">
-              {renderAnimatedText(specialText, true)}
+            <span className="inline sm:inline">
+              {renderAnimatedText(titleText)}
             </span>
-            {renderAnimatedText(endText)}
+            <span className="inline sm:inline">
+              <span className="whitespace-nowrap">
+                {renderAnimatedText(specialText, true)}
+              </span>
+              {renderAnimatedText(endText)}
+            </span>
           </motion.h1>
 
-          <p className="max-w-md text-center text-base my-7">
+          <p className="max-w-md text-center text-sm sm:text-base my-5 sm:my-7 px-4 sm:px-0">
             Build and upgrade your resume effortlessly with intelligent guidance
             at every step
           </p>
