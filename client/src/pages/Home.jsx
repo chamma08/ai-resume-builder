@@ -1,6 +1,6 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import { motion, useScroll, useSpring, LazyMotion, domAnimation } from "framer-motion";
-import { Home as HomeIcon } from '../utils/icons'; // Lucide Home icon
+import { Home as HomeIcon } from "lucide-react"; // Lucide Home icon
 import Banner from "../components/home/Banner";
 import { Hero } from "../components/home/Hero";
 

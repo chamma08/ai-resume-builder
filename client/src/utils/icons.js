@@ -1,111 +1,16 @@
-/**
- * Centralized icon exports from lucide-react
- * This approach ensures consistent bundling and prevents tree-shaking issues
- */
+// Central export file for all Lucide React icons used in the application
+// This allows for easier icon management and potential future replacement
+
 import * as LucideIcons from 'lucide-react';
 
-// Export all icons used across the application
-export const {
-  // Navigation & UI
-  Menu,
-  X,
-  ChevronDown,
-  ChevronUp,
-  ChevronLeft,
-  ChevronRight,
-  ArrowLeft,
-  ArrowRight,
-  Home,
-  Settings,
-  
-  // User & Profile
-  User,
-  Users,
-  UserPlus,
-  UserCircle,
-  LogIn,
-  LogOut,
-  Eye,
-  EyeOff,
-  Mail,
-  Lock,
-  Phone,
-  MapPin,
-  Globe,
-  Linkedin,
-  Github,
-  
-  // Actions & Commands
-  Plus,
-  Minus,
-  Edit,
-  Edit2,
-  Trash,
-  Trash2,
-  Save,
-  Download,
-  Upload,
-  Copy,
-  Check,
-  CheckCircle,
-  Search,
-  Filter,
-  RefreshCw,
-  RotateCcw,
-  
-  // Resume & Documents
-  FileText,
-  File,
-  Briefcase,
-  GraduationCap,
-  Award,
-  Code,
-  Palette,
-  Layout,
-  Layers,
-  
-  // Dashboard & Analytics
-  Activity,
-  TrendingUp,
-  TrendingDown,
-  BarChart,
-  PieChart,
-  Calendar,
-  Clock,
-  Target,
-  Zap,
-  Star,
-  
-  // Communication
-  MessageCircle,
-  Send,
-  Share,
-  Share2,
-  Gift,
-  
-  // Status & Alerts
-  AlertCircle,
-  AlertTriangle,
-  Info,
-  XCircle,
-  HelpCircle,
-  
-  // Misc
-  Sparkles,
-  Crown,
-  Trophy,
-  Coins,
-  DollarSign,
-  Link,
-  ExternalLink,
-  Camera,
-  
-  // Specific icons
-  FolderOpen,
-  MoreVertical,
-  Loader,
-  Loader2,
-} = LucideIcons;
+// Export all icons directly
+export * from 'lucide-react';
 
-// Re-export the default export for any edge cases
-export default LucideIcons;
+// Export specific icons with common aliases for backward compatibility
+export const PlusIcon = LucideIcons.Plus;
+export const TrashIcon = LucideIcons.Trash2;
+export const XIcon = LucideIcons.X;
+export const PencilIcon = LucideIcons.Pencil;
+export const LoaderCircleIcon = LucideIcons.LoaderCircle;
+export const UploadCloudIcon = LucideIcons.UploadCloud;
+export const FilePenLineIcon = LucideIcons.FilePenLine;
