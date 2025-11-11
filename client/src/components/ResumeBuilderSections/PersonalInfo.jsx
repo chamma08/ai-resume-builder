@@ -6,7 +6,7 @@ import {
   MapPin,
   Phone,
   User,
-} from "lucide-react";
+} from '../../utils/icons';
 
 export default function PersonalInfo({
   data,

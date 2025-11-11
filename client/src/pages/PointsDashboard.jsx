@@ -14,7 +14,7 @@ import {
   Star,
   Crown,
   Sparkles,
-} from "lucide-react";
+} from '../utils/icons';
 import { toast } from "react-toastify";
 
 export default function PointsDashboard() {

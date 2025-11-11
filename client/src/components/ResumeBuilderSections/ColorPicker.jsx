@@ -1,4 +1,4 @@
-import { Check, Palette, Sparkles } from "lucide-react";
+import { Check, Palette, Sparkles } from '../../utils/icons';
 import React, { useState } from "react";
 
 export default function ColorPicker({ selectedColor, onChange }) {

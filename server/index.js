@@ -30,7 +30,7 @@ app.use(compression());
 
 // CORS with optimized settings
 app.use(cors({
-  origin: process.env.CLIENT_URL || '*',
+  origin: process.env.FRONTEND_URL || process.env.CORS_ORIGIN || '*',
   credentials: true,
   optionsSuccessStatus: 200
 }));

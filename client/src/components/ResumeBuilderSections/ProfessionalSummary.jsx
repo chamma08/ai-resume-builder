@@ -1,4 +1,4 @@
-import { Loader2, Sparkle } from "lucide-react";
+import { Loader2, Sparkle } from '../../utils/icons';
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import API from "../../configs/api";

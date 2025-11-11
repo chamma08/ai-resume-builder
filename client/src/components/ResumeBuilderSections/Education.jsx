@@ -1,4 +1,4 @@
-import { GraduationCap, Plus, Trash2 } from "lucide-react";
+import { GraduationCap, Plus, Trash2 } from '../../utils/icons';
 import React from "react";
 
 export default function Education({ data, onChange }) {

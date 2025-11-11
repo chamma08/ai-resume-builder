@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchLeaderboard } from '../redux/features/pointsSlice';
-import { TrendingUp, Trophy, Medal, Award, Crown } from 'lucide-react';
+import { TrendingUp, Trophy, Medal, Award, Crown } from '../utils/icons';
 
 export default function Leaderboard() {
   const dispatch = useDispatch();

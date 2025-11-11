@@ -1,4 +1,4 @@
-import { Home, Eye, EyeOff } from "lucide-react";
+import { Home, Eye, EyeOff } from '../utils/icons';
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";

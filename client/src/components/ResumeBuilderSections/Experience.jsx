@@ -1,4 +1,4 @@
-import { Briefcase, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
+import { Briefcase, Loader2, Plus, Sparkles, Trash2 } from '../../utils/icons';
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import API from "../../configs/api";

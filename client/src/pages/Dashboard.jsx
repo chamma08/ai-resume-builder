@@ -8,7 +8,7 @@ import {
   XIcon,
   Trophy,
   TrendingUp,
-} from "lucide-react";
+} from '../utils/icons';
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";

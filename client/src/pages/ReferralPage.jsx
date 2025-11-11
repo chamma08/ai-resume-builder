@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { generateReferralCode, fetchUserPoints } from '../redux/features/pointsSlice';
-import { Gift, Copy, Users, TrendingUp, Share2, CheckCircle } from 'lucide-react';
+import { Gift, Copy, Users, TrendingUp, Share2, CheckCircle } from '../utils/icons';
 import { toast } from 'react-toastify';
 
 export default function ReferralPage() {

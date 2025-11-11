@@ -1,4 +1,4 @@
-import { Home, Mail } from "lucide-react";
+import { Home, Mail } from '../utils/icons';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";

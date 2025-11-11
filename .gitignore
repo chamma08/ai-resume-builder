@@ -1,5 +1,4 @@
 node_modules/
 dist/
-.env
 EMAIL_SETUP_GUIDE.md
 GMAIL_ERROR_FIX.md

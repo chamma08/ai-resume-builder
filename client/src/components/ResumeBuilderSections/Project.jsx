@@ -1,4 +1,4 @@
-import { Briefcase, Plus, Sparkles, Trash2 } from "lucide-react";
+import { Briefcase, Plus, Sparkles, Trash2 } from '../../utils/icons';
 import React from "react";
 
 export default function Project({ data, onChange }) {

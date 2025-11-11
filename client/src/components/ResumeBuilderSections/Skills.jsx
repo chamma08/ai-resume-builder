@@ -1,4 +1,4 @@
-import { Plus, Sparkles, X, Trash2, Lightbulb } from "lucide-react";
+import { Plus, Sparkles, X, Trash2, Lightbulb } from '../../utils/icons';
 import React, { useState } from "react";
 
 export default function Skills({ data, onChange }) {

@@ -15,7 +15,7 @@ import {
   Share2Icon,
   SparkleIcon,
   User,
-} from "lucide-react";
+} from '../utils/icons';
 import PersonalInfo from "../components/ResumeBuilderSections/PersonalInfo";
 import ResumePreview from "../components/ResumeBuilderSections/ResumePreview";
 import TemplateSelector from "../components/ResumeBuilderSections/TemplateSelector";
