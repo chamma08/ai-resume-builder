@@ -16,6 +16,9 @@ import API from "../configs/api";
 import { toast } from "react-toastify";
 import pdfTotext from "react-pdftotext";
 import { awardPoints, fetchUserPoints } from "../redux/features/pointsSlice";
+import OnboardingModal from "../components/modals/OnboardingModal";
+import PointsExplainerCard from "../components/PointsExplainerCard";
+import GettingStartedChecklist from "../components/GettingStartedChecklist";
 
 export default function Dashboard() {
   const { user, token } = useSelector((state) => state.auth);
@@ -41,6 +44,7 @@ export default function Dashboard() {
   const [allResumes, setAllResumes] = useState([]);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [resumeToDelete, setResumeToDelete] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -359,11 +363,41 @@ export default function Dashboard() {
     fetchResumes();
     // Fetch points when dashboard loads
     dispatch(fetchUserPoints());
-  }, []);
+    
+    // Check if user has seen onboarding
+    const hasSeenOnboarding = localStorage.getItem(`onboarding_completed_${user?._id}`);
+    if (!hasSeenOnboarding && user) {
+      // Show onboarding after a short delay
+      setTimeout(() => {
+        setShowOnboarding(true);
+      }, 500);
+    }
+  }, [user]);
+
+  const handleOnboardingClose = () => {
+    setShowOnboarding(false);
+    // Mark onboarding as completed
+    if (user) {
+      localStorage.setItem(`onboarding_completed_${user._id}`, 'true');
+    }
+  };
 
   return (
+    <>
+      {/* Onboarding Modal */}
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onClose={handleOnboardingClose}
+        userName={user?.name || 'User'}
+      />
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Points Explainer Card */}
+        <PointsExplainerCard 
+          userPoints={points || 0} 
+          onShowTutorial={() => setShowOnboarding(true)}
+        />
+
         {/* Points Widget - Compact with Hover Expansion */}
         <Link to="/app/points">
           <div className="group bg-white border-2 border-blue-200 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden mb-6">
@@ -411,7 +445,7 @@ export default function Dashboard() {
           </div>
         </Link>
 
-        {/* Header Section */}
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-800 mb-2">My Resumes</h1>
           <p className="text-slate-600">
@@ -459,6 +493,16 @@ export default function Dashboard() {
             </div>
           </button>
         </div>
+
+        {/* Getting Started Checklist - Show if user is new */}
+        {resumes.length < 3 && (
+          <GettingStartedChecklist
+            profileCompleted={user?.stats?.profileCompleted || false}
+            hasResumes={resumes.length > 0}
+            points={points || 0}
+            onCreateResume={() => setShowCreateResume(true)}
+          />
+        )}
 
         {/* Resumes Grid Section */}
         {resumes.length > 0 ? (
@@ -909,5 +953,6 @@ export default function Dashboard() {
         )}
       </div>
     </div>
+    </>
   );
 }
