@@ -8,6 +8,8 @@ import {
   XIcon,
   Trophy,
   TrendingUp,
+  ChevronDown,
+  ChevronUp,
 } from '../utils/icons';
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -45,6 +47,8 @@ export default function Dashboard() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [resumeToDelete, setResumeToDelete] = useState(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showGettingStarted, setShowGettingStarted] = useState(true);
+  const [showPointsSection, setShowPointsSection] = useState(true);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -392,16 +396,73 @@ export default function Dashboard() {
       />
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Points Explainer Card */}
-        <PointsExplainerCard 
-          userPoints={points || 0} 
-          onShowTutorial={() => setShowOnboarding(true)}
-        />
+        {/* Points Section with Toggle */}
+        <div className="mb-6">
+          {/* Toggle Button */}
+          <button
+            onClick={() => setShowPointsSection(!showPointsSection)}
+            className="flex items-center gap-2 mb-3 px-4 py-2 bg-white border-2 border-slate-200 hover:border-slate-300 rounded-lg transition-all duration-300 hover:shadow-md"
+          >
+            <span className="font-medium text-slate-700">Points & Rewards</span>
+            {showPointsSection ? (
+              <ChevronUp className="size-5 text-slate-600" />
+            ) : (
+              <ChevronDown className="size-5 text-slate-600" />
+            )}
+          </button>
+
+          {/* Collapsible Content */}
+          <div
+            className={`transition-all duration-500 ease-in-out overflow-hidden ${
+              showPointsSection 
+                ? 'max-h-[2000px] opacity-100' 
+                : 'max-h-0 opacity-0'
+            }`}
+          >
+            <PointsExplainerCard 
+              userPoints={points || 0} 
+              onShowTutorial={() => setShowOnboarding(true)}
+            />
+          </div>
+        </div>
+
+        {/* Getting Started Checklist - Show if user is new */}
+        {resumes.length < 3 && (
+          <div className="mb-6">
+            {/* Toggle Button */}
+            <button
+              onClick={() => setShowGettingStarted(!showGettingStarted)}
+              className="flex items-center gap-2 mb-3 px-4 py-2 bg-white border-2 border-slate-200 hover:border-slate-300 rounded-lg transition-all duration-300 hover:shadow-md"
+            >
+              <span className="font-medium text-slate-700">Getting Started Guide</span>
+              {showGettingStarted ? (
+                <ChevronUp className="size-5 text-slate-600" />
+              ) : (
+                <ChevronDown className="size-5 text-slate-600" />
+              )}
+            </button>
+
+            {/* Collapsible Content */}
+            <div
+              className={`transition-all duration-500 ease-in-out overflow-hidden ${
+                showGettingStarted 
+                  ? 'max-h-[2000px] opacity-100' 
+                  : 'max-h-0 opacity-0'
+              }`}
+            >
+              <GettingStartedChecklist
+                profileCompleted={user?.stats?.profileCompleted || false}
+                hasResumes={resumes.length > 0}
+                points={points || 0}
+                onCreateResume={() => setShowCreateResume(true)}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Points Widget - Compact with Hover Expansion */}
-        <Link to="/app/points">
+        {/* <Link to="/app/points">
           <div className="group bg-white border-2 border-blue-200 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden mb-6">
-            {/* Compact View - Always Visible */}
             <div className="flex items-center justify-between p-3 sm:p-4">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
@@ -425,7 +486,6 @@ export default function Dashboard() {
               </div>
             </div>
             
-            {/* Expanded View - Visible on Hover */}
             {level !== 'Diamond' && (
               <div className="max-h-0 group-hover:max-h-20 transition-all duration-300 overflow-hidden bg-slate-50 border-t border-slate-200">
                 <div className="p-3 sm:p-4">
@@ -443,7 +503,7 @@ export default function Dashboard() {
               </div>
             )}
           </div>
-        </Link>
+        </Link> */}
 
         {/* Header */}
         <div className="mb-8">
@@ -493,16 +553,6 @@ export default function Dashboard() {
             </div>
           </button>
         </div>
-
-        {/* Getting Started Checklist - Show if user is new */}
-        {resumes.length < 3 && (
-          <GettingStartedChecklist
-            profileCompleted={user?.stats?.profileCompleted || false}
-            hasResumes={resumes.length > 0}
-            points={points || 0}
-            onCreateResume={() => setShowCreateResume(true)}
-          />
-        )}
 
         {/* Resumes Grid Section */}
         {resumes.length > 0 ? (

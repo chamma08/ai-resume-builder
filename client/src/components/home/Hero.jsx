@@ -229,7 +229,7 @@ export const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex items-center gap-4 ">
-            <Link to="/app" hidden={user} className="bg-red-800 hover:bg-red-900 text-white rounded-full px-9 h-12 m-1 ring-offset-2 ring-1 ring-red-700 flex items-center transition-colors">
+            <Link to="/sign-up" hidden={user} className="bg-red-800 hover:bg-red-900 text-white rounded-full px-9 h-12 m-1 ring-offset-2 ring-1 ring-red-700 flex items-center transition-colors">
               Get started
               <svg
                 xmlns="http://www.w3.org/2000/svg"

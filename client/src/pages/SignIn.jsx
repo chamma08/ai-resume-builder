@@ -168,7 +168,7 @@ export default function SignIn() {
           <div className="absolute inset-0 bg-black/50"></div>
           <div className="flex h-full flex-col justify-center items-center relative z-10 text-center">
             <h2 className="text-3xl lg:text-4xl font-bold mb-3 lg:mb-4 text-white drop-shadow-lg">
-              Welcome Back
+              Welcome
             </h2>
             <p className="text-base lg:text-lg text-white drop-shadow-md max-w-md">
               Sign in to hunting jobs and building resumes seamlessly!
