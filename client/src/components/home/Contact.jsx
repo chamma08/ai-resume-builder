@@ -13,18 +13,86 @@ export default function Contact() {
   });
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState({ type: "", message: "" });
+  const [errors, setErrors] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone) => {
+    // Allow empty phone (optional field) or valid phone format
+    if (!phone) return true;
+    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    return phone.length >= 10 && phoneRegex.test(phone);
+  };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+    
+    // Clear error for the field being edited
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: "",
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setStatus({ type: "", message: "" });
+
+    // Validate all fields
+    const newErrors = {
+      fullName: "",
+      email: "",
+      phone: "",
+      message: "",
+    };
+
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Full name is required";
+    } else if (formData.fullName.trim().length < 2) {
+      newErrors.fullName = "Name must be at least 2 characters";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    if (formData.phone && !validatePhone(formData.phone)) {
+      newErrors.phone = "Please enter a valid phone number";
+    }
+
+    if (!formData.message.trim()) {
+      newErrors.message = "Message is required";
+    } else if (formData.message.trim().length < 10) {
+      newErrors.message = "Message must be at least 10 characters";
+    }
+
+    // Check if there are any errors
+    if (Object.values(newErrors).some(error => error !== "")) {
+      setErrors(newErrors);
+      setStatus({
+        type: "error",
+        message: "Please fix the errors in the form",
+      });
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await API.post("/api/contact/send", formData);
@@ -84,8 +152,15 @@ export default function Contact() {
                 onChange={handleChange}
                 placeholder="Full Name"
                 required
-                className="w-full border-2 border-gray-200 focus:border-red-900 focus:ring-2 focus:ring-red-200 p-3 rounded-lg transition-all duration-200 outline-none"
+                className={`w-full border-2 p-3 rounded-lg transition-all duration-200 outline-none ${
+                  errors.fullName
+                    ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+                    : "border-gray-200 focus:border-red-900 focus:ring-2 focus:ring-red-200"
+                }`}
               />
+              {errors.fullName && (
+                <p className="text-xs text-red-600 mt-1">{errors.fullName}</p>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700 block">Email Address</label>
@@ -96,19 +171,35 @@ export default function Contact() {
                 onChange={handleChange}
                 placeholder="Email Address"
                 required
-                className="w-full border-2 border-gray-200 focus:border-red-900 focus:ring-2 focus:ring-red-200 p-3 rounded-lg transition-all duration-200 outline-none"
+                className={`w-full border-2 p-3 rounded-lg transition-all duration-200 outline-none ${
+                  errors.email
+                    ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+                    : "border-gray-200 focus:border-red-900 focus:ring-2 focus:ring-red-200"
+                }`}
               />
+              {errors.email && (
+                <p className="text-xs text-red-600 mt-1">{errors.email}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 block">Phone Number</label>
+              <label className="text-sm font-medium text-gray-700 block">
+                Phone Number <span className="text-gray-500 text-xs">(Optional)</span>
+              </label>
               <input
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="Phone Number"
-                className="w-full border-2 border-gray-200 focus:border-red-900 focus:ring-2 focus:ring-red-200 p-3 rounded-lg transition-all duration-200 outline-none"
+                className={`w-full border-2 p-3 rounded-lg transition-all duration-200 outline-none ${
+                  errors.phone
+                    ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+                    : "border-gray-200 focus:border-red-900 focus:ring-2 focus:ring-red-200"
+                }`}
               />
+              {errors.phone && (
+                <p className="text-xs text-red-600 mt-1">{errors.phone}</p>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700 block">Your Message</label>
@@ -118,9 +209,16 @@ export default function Contact() {
                 onChange={handleChange}
                 placeholder="Tell us how we can help you..."
                 required
-                className="w-full border-2 border-gray-200 focus:border-red-900 focus:ring-2 focus:ring-red-200 p-3 rounded-lg transition-all duration-200 outline-none resize-none"
+                className={`w-full border-2 p-3 rounded-lg transition-all duration-200 outline-none resize-none ${
+                  errors.message
+                    ? "border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-200"
+                    : "border-gray-200 focus:border-red-900 focus:ring-2 focus:ring-red-200"
+                }`}
                 rows="5"
               />
+              {errors.message && (
+                <p className="text-xs text-red-600 mt-1">{errors.message}</p>
+              )}
             </div>
             <button 
               type="submit"

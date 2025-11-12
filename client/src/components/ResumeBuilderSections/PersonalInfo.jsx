@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   BriefcaseBusiness,
   Globe,
@@ -14,8 +15,68 @@ export default function PersonalInfo({
   removeBackground,
   setRemoveBackground,
 }) {
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+
+  const validateEmail = (email) => {
+    if (!email) return "";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email) ? "" : "Please enter a valid email address";
+  };
+
+  const validatePhone = (phone) => {
+    if (!phone) return "";
+    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    return phone.length >= 10 && phoneRegex.test(phone) 
+      ? "" 
+      : "Please enter a valid phone number (min 10 digits)";
+  };
+
+  const validateURL = (url) => {
+    if (!url) return "";
+    try {
+      // Allow URLs with or without protocol
+      const urlToTest = url.startsWith('http://') || url.startsWith('https://') 
+        ? url 
+        : `https://${url}`;
+      new URL(urlToTest);
+      return "";
+    } catch {
+      return "Please enter a valid URL (e.g., linkedin.com/in/yourname)";
+    }
+  };
+
+  const validateField = (field, value) => {
+    switch (field) {
+      case 'email':
+        return validateEmail(value);
+      case 'phone':
+        return validatePhone(value);
+      case 'linkedin':
+      case 'website':
+        return validateURL(value);
+      case 'full_name':
+        if (!value || value.trim().length < 2) {
+          return "Name must be at least 2 characters";
+        }
+        return "";
+      default:
+        return "";
+    }
+  };
+
   const handleChange = (field, value) => {
     onChange({ ...data, [field]: value });
+    
+    // Validate field in real-time
+    const error = validateField(field, value);
+    setErrors(prev => ({ ...prev, [field]: error }));
+  };
+
+  const handleBlur = (field) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    const error = validateField(field, data[field]);
+    setErrors(prev => ({ ...prev, [field]: error }));
   };
 
   const fields = [
@@ -171,15 +232,39 @@ export default function PersonalInfo({
                 <span className="truncate">{field.label}</span>
                 {field.required && <span className="text-red-500">*</span>}
               </label>
-              <input
-                id={field.key}
-                type={field.type}
-                value={data[field.key] || ""}
-                onChange={(e) => handleChange(field.key, e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent text-sm sm:text-base transition-all duration-300 hover:border-purple-200"
-                required={field.required}
-                placeholder={`Enter your ${field.label.toLowerCase()}`}
-              />
+              <div className="relative">
+                <input
+                  id={field.key}
+                  type={field.type}
+                  value={data[field.key] || ""}
+                  onChange={(e) => handleChange(field.key, e.target.value)}
+                  onBlur={() => handleBlur(field.key)}
+                  className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 text-sm sm:text-base transition-all duration-300 ${
+                    touched[field.key] && errors[field.key]
+                      ? "border-red-500 focus:ring-red-400 focus:border-red-500"
+                      : touched[field.key] && data[field.key] && !errors[field.key]
+                      ? "border-green-500 focus:ring-green-400 focus:border-green-500"
+                      : "border-gray-200 focus:ring-purple-400 focus:border-transparent hover:border-purple-200"
+                  }`}
+                  required={field.required}
+                  placeholder={`Enter your ${field.label.toLowerCase()}`}
+                />
+                {touched[field.key] && data[field.key] && !errors[field.key] && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                )}
+              </div>
+              {touched[field.key] && errors[field.key] && (
+                <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  {errors[field.key]}
+                </p>
+              )}
             </div>
           );
         })}

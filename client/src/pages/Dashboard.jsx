@@ -62,9 +62,35 @@ export default function Dashboard() {
   const createResume = async (e) => {
     try {
       e.preventDefault();
+      
+      // Validation
+      if (!title || title.trim().length === 0) {
+        toast.error("Please enter a resume title", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+      
+      if (title.trim().length < 3) {
+        toast.error("Title must be at least 3 characters long", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+      
+      if (title.trim().length > 50) {
+        toast.error("Title must not exceed 50 characters", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+      
       const { data } = await API.post(
         "/api/resumes/create-resume",
-        { title },
+        { title: title.trim() },
         {
           headers: {
             Authorization: token,
@@ -105,6 +131,65 @@ export default function Dashboard() {
 
   const uploadResume = async (e) => {
     e.preventDefault();
+    
+    // Validation
+    if (!title || title.trim().length === 0) {
+      toast.error("Please enter a resume title", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    if (title.trim().length < 3) {
+      toast.error("Title must be at least 3 characters long", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    if (title.trim().length > 50) {
+      toast.error("Title must not exceed 50 characters", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    if (!resume) {
+      toast.error("Please select a PDF file to upload", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    // Validate file type
+    if (resume.type !== "application/pdf") {
+      toast.error("Only PDF files are allowed", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    // Validate file size (e.g., max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (resume.size > maxSize) {
+      toast.error("File size must not exceed 5MB", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      setIsLoading(false);
+      return;
+    }
+    
     setIsLoading(true);
     try {
       console.log("Starting PDF text extraction...");
@@ -113,6 +198,7 @@ export default function Dashboard() {
       
       if (!resumeText || resumeText.trim().length === 0) {
         toast.error("Could not extract text from PDF. Please ensure the PDF contains text.");
+        setIsLoading(false);
         return;
       }
       
@@ -179,9 +265,35 @@ export default function Dashboard() {
   const editTitle = async (e) => {
     try {
       e.preventDefault();
+      
+      // Validation
+      if (!title || title.trim().length === 0) {
+        toast.error("Please enter a resume title", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+      
+      if (title.trim().length < 3) {
+        toast.error("Title must be at least 3 characters long", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+      
+      if (title.trim().length > 50) {
+        toast.error("Title must not exceed 50 characters", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+      
       const { data } = await API.put(
         "/api/resumes/update-resume",
-        { resumeId: editResumeId, resumeData: JSON.stringify({ title }) },
+        { resumeId: editResumeId, resumeData: JSON.stringify({ title: title.trim() }) },
         {
           headers: {
             Authorization: token,

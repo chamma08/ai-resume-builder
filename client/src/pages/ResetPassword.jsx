@@ -12,6 +12,8 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState([]);
+  const [passwordTouched, setPasswordTouched] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const emailFromState = location.state?.email || "";
@@ -33,8 +35,45 @@ export default function ResetPassword() {
     }
   }, [emailFromState, navigate]);
 
+  // Password validation function
+  const validatePassword = (password) => {
+    const errors = [];
+    
+    if (password.length < 8) {
+      errors.push("Password must be at least 8 characters long");
+    }
+    
+    if (!/[0-9]/.test(password)) {
+      errors.push("Password must contain at least one number (0-9)");
+    }
+    
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      errors.push("Password must contain at least one special character (!@#$%^&*, etc.)");
+    }
+    
+    if (!/[A-Z]/.test(password)) {
+      errors.push("Password must contain at least one uppercase letter");
+    }
+    
+    if (!/[a-z]/.test(password)) {
+      errors.push("Password must contain at least one lowercase letter");
+    }
+    
+    return errors;
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
+    
+    // Validate password in real-time
+    if (id === "newPassword") {
+      if (!passwordTouched && value.length > 0) {
+        setPasswordTouched(true);
+      }
+      const errors = validatePassword(value);
+      setPasswordErrors(errors);
+    }
   };
 
   const handleVerifyOTP = async () => {
@@ -100,10 +139,14 @@ export default function ResetPassword() {
       return;
     }
 
-    if (formData.newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters long", {
+    // Comprehensive password validation
+    const passwordValidationErrors = validatePassword(formData.newPassword);
+    if (passwordValidationErrors.length > 0) {
+      setPasswordTouched(true);
+      setPasswordErrors(passwordValidationErrors);
+      toast.error("Password does not meet security requirements", {
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 4000,
       });
       return;
     }
@@ -281,12 +324,19 @@ export default function ResetPassword() {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter new password"
+                  placeholder="Create a strong password"
                   id="newPassword"
                   value={formData.newPassword}
                   onChange={handleChange}
+                  onBlur={() => setPasswordTouched(true)}
                   disabled={!otpVerified}
-                  className="w-full rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm sm:text-base outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition-all disabled:bg-gray-100"
+                  className={`w-full rounded-lg border px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm sm:text-base outline-none focus:ring-2 transition-all disabled:bg-gray-100 ${
+                    passwordTouched && passwordErrors.length > 0
+                      ? "border-red-500 focus:ring-red-500"
+                      : passwordTouched && passwordErrors.length === 0 && formData.newPassword
+                      ? "border-green-500 focus:ring-green-500"
+                      : "border-gray-300 focus:ring-red-900"
+                  }`}
                   required
                 />
                 <button
@@ -302,6 +352,36 @@ export default function ResetPassword() {
                   )}
                 </button>
               </div>
+              
+              {/* Password Strength Indicator */}
+              {passwordTouched && formData.newPassword && (
+                <div className="mt-2">
+                  {passwordErrors.length === 0 ? (
+                    <div className="flex items-center gap-2 text-green-600 text-xs">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="font-medium">Strong password! ✓</span>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-red-600 flex items-center gap-1">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        Password is not strong enough:
+                      </p>
+                      <ul className="space-y-0.5 ml-5">
+                        {passwordErrors.map((error, index) => (
+                          <li key={index} className="text-xs text-red-600 list-disc">
+                            {error}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Confirm Password */}
@@ -317,7 +397,13 @@ export default function ResetPassword() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   disabled={!otpVerified}
-                  className="w-full rounded-lg border border-gray-300 px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm sm:text-base outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition-all disabled:bg-gray-100"
+                  className={`w-full rounded-lg border px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 text-sm sm:text-base outline-none focus:ring-2 transition-all disabled:bg-gray-100 ${
+                    formData.confirmPassword && formData.newPassword !== formData.confirmPassword
+                      ? "border-red-500 focus:ring-red-500"
+                      : formData.confirmPassword && formData.newPassword === formData.confirmPassword
+                      ? "border-green-500 focus:ring-green-500"
+                      : "border-gray-300 focus:ring-red-900"
+                  }`}
                   required
                 />
                 <button
@@ -333,6 +419,26 @@ export default function ResetPassword() {
                   )}
                 </button>
               </div>
+              {/* Password Match Indicator */}
+              {formData.confirmPassword && (
+                <div className="mt-2">
+                  {formData.newPassword === formData.confirmPassword ? (
+                    <div className="flex items-center gap-2 text-green-600 text-xs">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="font-medium">Passwords match! ✓</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-red-600 text-xs">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      <span className="font-medium">Passwords do not match</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <button
