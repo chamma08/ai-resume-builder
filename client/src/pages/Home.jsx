@@ -3,6 +3,7 @@ import { motion, useScroll, useSpring, LazyMotion, domAnimation } from "framer-m
 import { Home as HomeIcon } from "lucide-react"; // Lucide Home icon
 import Banner from "../components/home/Banner";
 import { Hero } from "../components/home/Hero";
+import WelcomeTutorialModal from "../components/modals/WelcomeTutorialModal";
 
 // Lazy load non-critical components
 const Features = lazy(() => import("../components/home/Features"));
@@ -52,6 +53,9 @@ export default function Home() {
 
   return (
     <>
+      {/* Welcome Tutorial Modal */}
+      <WelcomeTutorialModal />
+
       {/* Progress bar */}
       <motion.div
         className="fixed top-0 left-0 right-0 h-1 bg-linear-to-r from-pink-500 to-blue-500 origin-left z-50"
