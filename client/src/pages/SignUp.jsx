@@ -15,6 +15,7 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState([]);
   const [passwordTouched, setPasswordTouched] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -352,6 +353,8 @@ export default function SignUp() {
               <input
                 type="checkbox"
                 id="terms"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
                 className="w-4 h-4 mt-0.5 accent-black cursor-pointer"
               />
               <label
@@ -378,7 +381,7 @@ export default function SignUp() {
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={loading}
+              disabled={loading || !termsAccepted}
               className="w-full rounded-lg bg-red-800 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-red-900 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating Account..." : "Create Account"}
