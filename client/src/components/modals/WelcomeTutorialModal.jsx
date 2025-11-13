@@ -2,15 +2,22 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, FileText, Zap, Award, TrendingUp, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function WelcomeTutorialModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
+    // Only show modal if user is NOT signed in
+    if (user) {
+      return; // User is signed in, don't show modal
+    }
+
     // Check if user has seen the tutorial before
     const hasSeenTutorial = localStorage.getItem("hasSeenWelcomeTutorial");
     
-    // Show modal after 2 seconds if user hasn't seen it
+    // Show modal after 2 seconds if user hasn't seen it and is not signed in
     if (!hasSeenTutorial) {
       const timer = setTimeout(() => {
         setIsOpen(true);
@@ -18,7 +25,7 @@ export default function WelcomeTutorialModal() {
 
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [user]);
 
   const handleClose = () => {
     setIsOpen(false);
