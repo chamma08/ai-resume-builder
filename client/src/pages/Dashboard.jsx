@@ -49,6 +49,7 @@ export default function Dashboard() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGettingStarted, setShowGettingStarted] = useState(true);
   const [showPointsSection, setShowPointsSection] = useState(true);
+  const [checklistDismissed, setChecklistDismissed] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -492,7 +493,7 @@ export default function Dashboard() {
         {/* Help & Rewards Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Getting Started Guide */}
-          {resumes.length < 3 && (
+          {resumes.length < 3 && !checklistDismissed && showGettingStarted && (
             <div className="bg-white rounded-2xl shadow-lg border-2 border-emerald-200 overflow-hidden">
               <button
                 onClick={() => setShowGettingStarted(!showGettingStarted)}
@@ -507,59 +508,39 @@ export default function Dashboard() {
                     <p className="text-sm text-slate-600">Learn the basics in 2 minutes</p>
                   </div>
                 </div>
-                {showGettingStarted ? (
-                  <ChevronUp className="size-6 text-slate-600" />
-                ) : (
-                  <ChevronDown className="size-6 text-slate-600" />
-                )}
+                <ChevronUp className="size-6 text-slate-600" />
               </button>
-              <div
-                className={`transition-all duration-500 ease-in-out overflow-hidden ${
-                  showGettingStarted 
-                    ? 'max-h-[2000px] opacity-100' 
-                    : 'max-h-0 opacity-0'
-                }`}
-              >
-                <div className="px-6 pb-6">
-                  <GettingStartedChecklist
-                    profileCompleted={user?.stats?.profileCompleted || false}
-                    hasResumes={resumes.length > 0}
-                    points={points || 0}
-                    onCreateResume={() => setShowCreateResume(true)}
-                  />
-                </div>
+              <div className="px-6 pb-6">
+                <GettingStartedChecklist
+                  profileCompleted={user?.stats?.profileCompleted || false}
+                  hasResumes={resumes.length > 0}
+                  hasDownloaded={(user?.stats?.resumesDownloaded || 0) > 0}
+                  points={points || 0}
+                  onCreateResume={() => setShowCreateResume(true)}
+                  onDismiss={() => setChecklistDismissed(true)}
+                />
               </div>
             </div>
           )}
 
           {/* Points & Rewards */}
-          <div className="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden">
-            <button
-              onClick={() => setShowPointsSection(!showPointsSection)}
-              className="w-full flex items-center justify-between p-6 hover:bg-amber-50 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-                  <Trophy className="size-7 text-amber-600" />
+          {showPointsSection && (
+            <div className={`bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden ${(resumes.length >= 3 || checklistDismissed || !showGettingStarted) ? 'lg:col-span-2' : ''}`}>
+              <button
+                onClick={() => setShowPointsSection(!showPointsSection)}
+                className="w-full flex items-center justify-between p-6 hover:bg-amber-50 transition-colors"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
+                    <Trophy className="size-7 text-amber-600" />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="text-xl font-bold text-slate-800">Rewards Program</h3>
+                    <p className="text-sm text-slate-600">Earn points & unlock features</p>
+                  </div>
                 </div>
-                <div className="text-left">
-                  <h3 className="text-xl font-bold text-slate-800">Rewards Program</h3>
-                  <p className="text-sm text-slate-600">Earn points & unlock features</p>
-                </div>
-              </div>
-              {showPointsSection ? (
                 <ChevronUp className="size-6 text-slate-600" />
-              ) : (
-                <ChevronDown className="size-6 text-slate-600" />
-              )}
-            </button>
-            <div
-              className={`transition-all duration-500 ease-in-out overflow-hidden ${
-                showPointsSection 
-                  ? 'max-h-[2000px] opacity-100' 
-                  : 'max-h-0 opacity-0'
-              }`}
-            >
+              </button>
               <div className="px-6 pb-6">
                 <PointsExplainerCard 
                   userPoints={points || 0} 
@@ -567,8 +548,42 @@ export default function Dashboard() {
                 />
               </div>
             </div>
-          </div>
+          )}
         </div>
+
+        {/* Collapsed Section Indicators */}
+        {((resumes.length < 3 && !checklistDismissed && !showGettingStarted) || !showPointsSection) && (
+          <div className="flex gap-4 mb-8">
+            {resumes.length < 3 && !checklistDismissed && !showGettingStarted && (
+              <button
+                onClick={() => setShowGettingStarted(true)}
+                className="flex-1 bg-emerald-50 border-2 border-emerald-200 rounded-xl p-4 hover:bg-emerald-100 transition-colors flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                    <span className="text-xl">🚀</span>
+                  </div>
+                  <span className="font-semibold text-slate-700">Quick Start Guide</span>
+                </div>
+                <ChevronDown className="size-5 text-slate-600" />
+              </button>
+            )}
+            {!showPointsSection && (
+              <button
+                onClick={() => setShowPointsSection(true)}
+                className="flex-1 bg-amber-50 border-2 border-amber-200 rounded-xl p-4 hover:bg-amber-100 transition-colors flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+                    <Trophy className="size-6 text-amber-600" />
+                  </div>
+                  <span className="font-semibold text-slate-700">Rewards Program</span>
+                </div>
+                <ChevronDown className="size-5 text-slate-600" />
+              </button>
+            )}
+          </div>
+        )}
 
         {/* My Resumes Section */}
         {resumes.length > 0 ? (

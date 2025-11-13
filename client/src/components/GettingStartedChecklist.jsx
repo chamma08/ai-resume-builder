@@ -1,11 +1,13 @@
-import { CheckCircle, Circle, ArrowRight } from 'lucide-react';
+import { CheckCircle, Circle, ArrowRight, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function GettingStartedChecklist({ 
   profileCompleted, 
   hasResumes, 
+  hasDownloaded,
   points,
-  onCreateResume 
+  onCreateResume,
+  onDismiss
 }) {
   const steps = [
     {
@@ -42,7 +44,7 @@ export default function GettingStartedChecklist({
       id: 'download',
       title: 'Download your resume',
       description: 'Export your resume as PDF',
-      completed: false,
+      completed: hasDownloaded,
       points: -50,
       info: 'Costs 50 points'
     }
@@ -163,10 +165,21 @@ export default function GettingStartedChecklist({
 
       {/* Summary */}
       {completedSteps === steps.length ? (
-        <div className="mt-6 p-4 bg-purple-100 rounded-xl border-2 border-purple-300">
-          <p className="text-center font-bold text-purple-900">
-            🎉 Congratulations! You've completed all the getting started steps!
-          </p>
+        <div className="mt-6">
+          <div className="p-4 bg-purple-100 rounded-xl border-2 border-purple-300">
+            <p className="text-center font-bold text-purple-900">
+              🎉 Congratulations! You've completed all the getting started steps!
+            </p>
+          </div>
+          {onDismiss && (
+            <button
+              onClick={onDismiss}
+              className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors group"
+            >
+              <X className="w-5 h-5" />
+              <span>Hide Quick Start Guide</span>
+            </button>
+          )}
         </div>
       ) : (
         <div className="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
