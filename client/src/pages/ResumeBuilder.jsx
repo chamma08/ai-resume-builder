@@ -29,6 +29,7 @@ import { useDispatch, useSelector } from "react-redux";
 import API from "../configs/api";
 import { toast } from "react-toastify";
 import DownloadConfirmModal from "../components/modals/DownloadConfirmModal";
+import RatingFeedbackModal from "../components/modals/RatingFeedbackModal";
 import { deductPoints, fetchUserPoints } from '../redux/features/pointsSlice';
 
 export default function ResumeBuilder() {
@@ -39,6 +40,7 @@ export default function ResumeBuilder() {
   const { token } = useSelector((state) => state.auth);
 
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
   const [currentResumeId, setCurrentResumeId] = useState(null);
   const [currentTemplate, setCurrentTemplate] = useState(null);
 
@@ -240,6 +242,11 @@ export default function ResumeBuilder() {
       setTimeout(() => {
         window.print();
       }, 500);
+
+      // Show rating modal after print dialog (2 seconds delay)
+      setTimeout(() => {
+        setShowRatingModal(true);
+      }, 2500);
 
     } catch (error) {
       if (error.error === "INSUFFICIENT_POINTS") {
@@ -664,6 +671,12 @@ export default function ResumeBuilder() {
               onConfirm={handleConfirmDownload}
               resumeId={currentResumeId}
               templateType={currentTemplate}
+            />
+
+            {/* Rating & Feedback modal */}
+            <RatingFeedbackModal
+              isOpen={showRatingModal}
+              onClose={() => setShowRatingModal(false)}
             />
           </div>
 
