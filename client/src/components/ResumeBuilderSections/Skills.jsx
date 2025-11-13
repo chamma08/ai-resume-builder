@@ -32,10 +32,10 @@ export default function Skills({ data, onChange }) {
       <div className="border-l-4 border-blue-600 pl-4">
         <h3 className="flex items-center gap-2 text-xl font-bold text-gray-900">
           <Sparkles className="w-5 h-5 text-blue-600" />
-          Skills
+          Skills & Abilities
         </h3>
         <p className="text-sm text-gray-600 mt-1">
-          Showcase your technical and soft skills
+          Add both professional and personal skills you possess
         </p>
       </div>
 
@@ -45,7 +45,7 @@ export default function Skills({ data, onChange }) {
           <div className="flex-1">
             <input
               type="text"
-              placeholder="e.g., JavaScript, Project Management, Communication..."
+              placeholder="e.g., Microsoft Excel, Customer Service, Public Speaking, Teamwork..."
               className="w-full px-4 py-3 text-sm sm:text-base border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
               onChange={(e) => setNewSkill(e.target.value)}
               value={newSkill}
@@ -74,7 +74,7 @@ export default function Skills({ data, onChange }) {
             No skills added yet
           </h4>
           <p className="text-sm text-gray-600 max-w-md mx-auto">
-            Start adding your skills to make your resume stand out. Include both technical and soft skills relevant to your target role.
+            Start adding your skills! Include work-related abilities (like computer programs, languages) and personal strengths (like teamwork, communication).
           </p>
         </div>
       ) : (

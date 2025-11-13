@@ -36,17 +36,17 @@ export default function ProfessionalSummary({ data, onChange, setResumeData }) {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg gap-2 text-gray-900 font-semibold">
-            Professional Summary
+            Your Profile Summary
           </h3>
-          <p className="text-sm text-gray-500">Add summary of your resume</p>
+          <p className="text-sm text-gray-500">Write a brief overview about yourself and your career goals</p>
         </div>
         <button
           disabled={isGenerating}
           onClick={generateSummary}
-          className="flex items-center gap-2 px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-3 py-2 text-sm bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors disabled:opacity-50 whitespace-nowrap"
         >
           {isGenerating ? (
-            <Loader2 className="size=4 animate-spin" />
+            <Loader2 className="size-4 animate-spin" />
           ) : (
             <Sparkle size={14} />
           )}
@@ -59,12 +59,11 @@ export default function ProfessionalSummary({ data, onChange, setResumeData }) {
           value={data || ""}
           rows={7}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Write a brief summary about your professional background, skills, and career goals."
+          placeholder="Example: I am a dedicated marketing professional with 5+ years of experience in digital campaigns and brand strategy. I'm passionate about creating engaging content and driving business growth through innovative marketing solutions."
           className="w-full min-h-[120px] border border-gray-300 rounded-md p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-y"
         />
-        <p className="text-xs text-gray-500 max-w-4/5 mx-auto text-center">
-          Tip: Keep it concise (3-4 sentences) and focus on your key
-          achievements and skills
+        <p className="text-xs text-gray-500 max-w-4/5 mx-auto text-center mt-2">
+          💡 Tip: Keep it brief (3-4 sentences) and focus on your key strengths, achievements, and what you're looking for
         </p>
       </div>
     </div>

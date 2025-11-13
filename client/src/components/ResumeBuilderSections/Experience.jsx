@@ -61,10 +61,10 @@ export default function Experience({ data, onChange }) {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg gap-2 text-gray-900 font-semibold">
-            Professional Experience
+            Work Experience
           </h3>
           <p className="text-sm text-gray-500">
-            Add details of your work experience
+            Add your work history and job roles
           </p>
         </div>
         <button
@@ -72,15 +72,15 @@ export default function Experience({ data, onChange }) {
           className="flex items-center gap-2 px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hover:bg-purple-200 transition-colors"
         >
           <Plus size={14} />
-          Add Experience
+          Add Job
         </button>
       </div>
 
       {data.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           <Briefcase className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-          <p>No experience added yet</p>
-          <p className="text-sm">Click "Add Experience" to get started</p>
+          <p>No work experience added yet</p>
+          <p className="text-sm">Click "Add Job" to get started</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -105,7 +105,7 @@ export default function Experience({ data, onChange }) {
                     updateExperience(index, "company", e.target.value)
                   }
                   type="text"
-                  placeholder="Company Name"
+                  placeholder="Company/Organization Name"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300"
                 />
                 <input
@@ -114,7 +114,7 @@ export default function Experience({ data, onChange }) {
                     updateExperience(index, "position", e.target.value)
                   }
                   type="text"
-                  placeholder="Job Title/Position"
+                  placeholder="Your Job Title/Role"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300"
                 />
                 <input
@@ -157,7 +157,7 @@ export default function Experience({ data, onChange }) {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-gray-700">
-                    Job Description
+                    What did you do in this role?
                   </label>
                   <button
                     onClick={() => generateJobDescription(index)}
@@ -183,7 +183,7 @@ export default function Experience({ data, onChange }) {
                   }
                   rows={4}
                   className="w-full text-sm px-3 py-2 rounded-lg resize-none border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  placeholder="Describe your key responsibilities and achievements.."
+                  placeholder="Example: Managed customer service team of 5 people. Improved customer satisfaction by 30%. Handled daily operations and trained new staff members..."
                 />
               </div>
             </div>

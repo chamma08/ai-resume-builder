@@ -27,10 +27,10 @@ export default function Education({ data, onChange }) {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg gap-2 text-gray-900 font-semibold">
-            Educational Background
+            Education & Qualifications
           </h3>
           <p className="text-sm text-gray-500">
-            Add details of your educational background
+            Add your educational background and degrees
           </p>
         </div>
         <button
@@ -46,7 +46,7 @@ export default function Education({ data, onChange }) {
         <div className="text-center py-8 text-gray-500">
           <GraduationCap className="w-12 h-12 mx-auto mb-3 text-gray-300" />
           <p>No education added yet</p>
-          <p className="text-sm">Click "Add Education" to get started</p>
+          <p className="text-sm">Click "Add Education" to include your qualifications</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -71,7 +71,7 @@ export default function Education({ data, onChange }) {
                     updateEducation(index, "institution", e.target.value)
                   }
                   type="text"
-                  placeholder="Institution Name"
+                  placeholder="School/College/University Name"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300"
                 />
                 <input
@@ -80,7 +80,7 @@ export default function Education({ data, onChange }) {
                     updateEducation(index, "degree", e.target.value)
                   }
                   type="text"
-                  placeholder="Degree"
+                  placeholder="Degree (e.g., Bachelor's, Master's, High School)"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300"
                 />
                 <input
@@ -89,7 +89,7 @@ export default function Education({ data, onChange }) {
                     updateEducation(index, "field", e.target.value)
                   }
                   type="text"
-                  placeholder="Field of Study"
+                  placeholder="Major/Subject (e.g., Computer Science, Business)"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300"
                 />
                 <input
@@ -107,7 +107,7 @@ export default function Education({ data, onChange }) {
                     updateEducation(index, "gpa", e.target.value)
                   }
                   type="text"
-                  placeholder="GPA (Optional)"
+                  placeholder="Grade/GPA (Optional, e.g., 3.8/4.0 or First Class)"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300"
                 />
               </div>

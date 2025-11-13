@@ -256,12 +256,12 @@ export default function ResumeBuilder() {
   const [removeBackground, setRemoveBackground] = useState(false);
 
   const sections = [
-    { id: "personal", title: "Personal Info", icon: User },
-    { id: "professional_summary", title: "Professional Summary", icon: User },
-    { id: "experience", title: "Experience", icon: Briefcase },
+    { id: "personal", title: "About You", icon: User },
+    { id: "professional_summary", title: "Your Profile Summary", icon: User },
+    { id: "experience", title: "Work Experience", icon: Briefcase },
     { id: "education", title: "Education", icon: GraduationCap },
-    { id: "projects", title: "Projects", icon: FolderIcon },
-    { id: "skills", title: "Skills", icon: SparkleIcon },
+    { id: "projects", title: "Projects & Achievements", icon: FolderIcon },
+    { id: "skills", title: "Skills & Abilities", icon: SparkleIcon },
   ];
 
   const activeSection = sections[activeSectionIndex];

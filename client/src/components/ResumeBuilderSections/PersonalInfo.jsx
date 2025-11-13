@@ -87,17 +87,17 @@ export default function PersonalInfo({
       icon: User,
       required: true,
     },
-    { key: "email", label: "Email", type: "email", icon: Mail, required: true },
+    { key: "email", label: "Email Address", type: "email", icon: Mail, required: true },
     { key: "phone", label: "Phone Number", type: "tel", icon: Phone },
-    { key: "address", label: "Address", type: "text", icon: MapPin },
+    { key: "address", label: "Home Address", type: "text", icon: MapPin },
     {
       key: "profession",
-      label: "Profession",
+      label: "Job Title / Profession",
       type: "text",
       icon: BriefcaseBusiness,
     },
-    { key: "linkedin", label: "LinkedIn", type: "url", icon: Linkedin },
-    { key: "website", label: "Personal Website", type: "url", icon: Globe },
+    { key: "linkedin", label: "LinkedIn Profile", type: "url", icon: Linkedin },
+    { key: "website", label: "Personal Website or Portfolio", type: "url", icon: Globe },
   ];
 
   return (
@@ -109,11 +109,11 @@ export default function PersonalInfo({
             <User className="size-6 text-indigo-600" />
           </div>
           <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">
-            Personal Information
+            About You
           </h3>
         </div>
         <p className="text-sm sm:text-base text-gray-600 ml-14">
-          Let's start with your basic details
+          Let's start with your basic contact details
         </p>
       </div>
 

@@ -29,10 +29,10 @@ export default function Project({ data, onChange }) {
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg gap-2 text-gray-900 font-semibold">
-            Projects & Portfolio
+            Projects & Achievements
           </h3>
           <p className="text-sm text-gray-500">
-            Add details of your projects and portfolio
+            Showcase your notable projects, assignments, or accomplishments
           </p>
         </div>
         <button
@@ -47,7 +47,7 @@ export default function Project({ data, onChange }) {
       {data.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           <Briefcase className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-          <p>No experience added yet</p>
+          <p>No projects added yet</p>
           <p className="text-sm">Click "Add Experience" to get started</p>
         </div>
       ) : (
@@ -73,14 +73,14 @@ export default function Project({ data, onChange }) {
                     updateProject(index, "name", e.target.value)
                   }
                   type="text"
-                  placeholder="Project Title"
+                  placeholder="Project Name or Title"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300"
                 />
                 <input
                   value={project.type || ""}
                   onChange={(e) => updateProject(index, "type", e.target.value)}
                   type="text"
-                  placeholder="Project Type (e.g., Web App, Mobile App)"
+                  placeholder="Type (e.g., School Project, Volunteer Work, Personal)"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300"
                 />
                 {/* <input
@@ -106,7 +106,7 @@ export default function Project({ data, onChange }) {
                     updateProject(index, "technologies", e.target.value)
                   }
                   type="text"
-                  placeholder="Technologies Used (e.g., React, Node.js)"
+                  placeholder="Tools/Skills Used (e.g., Excel, Photoshop, Teamwork)"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300"
                 />
               </div>
@@ -114,7 +114,7 @@ export default function Project({ data, onChange }) {
               <div className="space-y-2 mt-6">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-gray-600">
-                    Project Description
+                    What did you do and what was the result?
                   </label>
                 </div>
                 <textarea
@@ -124,7 +124,7 @@ export default function Project({ data, onChange }) {
                   }
                   rows={4}
                   className="w-full text-sm px-3 py-2 rounded-lg resize-none border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 mt-4"
-                  placeholder="Describe your key responsibilities and achievements.."
+                  placeholder="Example: Created a marketing campaign for local charity that raised $5,000. Designed flyers, managed social media, and coordinated volunteers..."
                 />
               </div>
             </div>
