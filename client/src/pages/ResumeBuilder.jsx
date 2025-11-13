@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import { dummyResumeData } from "../assets/assets";
 import {
@@ -42,6 +42,29 @@ export default function ResumeBuilder() {
   const [currentResumeId, setCurrentResumeId] = useState(null);
   const [currentTemplate, setCurrentTemplate] = useState(null);
 
+  // Auto-save states
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
+  const [saveStatus, setSaveStatus] = useState("saved"); // "saved", "saving", "unsaved"
+  const [showAutoSaveInfo, setShowAutoSaveInfo] = useState(false);
+  const autoSaveTimerRef = useRef(null);
+  const initialLoadRef = useRef(true);
+
+  // Check if user has seen auto-save info
+  useEffect(() => {
+    const hasSeenAutoSaveInfo = localStorage.getItem("hasSeenAutoSaveInfo");
+    if (!hasSeenAutoSaveInfo) {
+      setTimeout(() => {
+        setShowAutoSaveInfo(true);
+      }, 3000); // Show after 3 seconds
+    }
+  }, []);
+
+  const closeAutoSaveInfo = () => {
+    setShowAutoSaveInfo(false);
+    localStorage.setItem("hasSeenAutoSaveInfo", "true");
+  };
+
   const [resumeData, setResumeData] = useState({
     _id: "",
     title: "",
@@ -65,11 +88,98 @@ export default function ResumeBuilder() {
       });
       if (data.resume) {
         setResumeData(data.resume);
+        setLastSaved(new Date());
+        setSaveStatus("saved");
         document.title = `Editing Resume - ${data.resume.title}`;
       }
     } catch (error) {
       console.error("Error loading existing resume:", error);
     }
+  };
+
+  // Auto-save function
+  const autoSaveResume = async () => {
+    if (isSaving || initialLoadRef.current) return;
+    
+    try {
+      setIsSaving(true);
+      setSaveStatus("saving");
+      
+      let updatedResumeData = structuredClone(resumeData);
+
+      // Remove image from resume data if it's an object
+      if (typeof resumeData.personal_info.image === "object") {
+        delete updatedResumeData.personal_info.image;
+      }
+
+      const formData = new FormData();
+      formData.append("resumeId", resumeId);
+      formData.append("resumeData", JSON.stringify(updatedResumeData));
+
+      removeBackground && formData.append("removeBackground", "yes");
+      typeof resumeData.personal_info.image === "object" &&
+        formData.append("image", resumeData.personal_info.image);
+
+      await API.put("/api/resumes/update-resume", formData, {
+        headers: {
+          Authorization: token,
+        },
+      });
+      
+      setLastSaved(new Date());
+      setSaveStatus("saved");
+      setIsSaving(false);
+    } catch (error) {
+      console.error("Auto-save error:", error);
+      setSaveStatus("unsaved");
+      setIsSaving(false);
+    }
+  };
+
+  // Trigger auto-save when resume data changes
+  useEffect(() => {
+    // Skip auto-save on initial load
+    if (initialLoadRef.current) {
+      initialLoadRef.current = false;
+      return;
+    }
+
+    // Mark as unsaved when data changes
+    setSaveStatus("unsaved");
+
+    // Clear existing timer
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+
+    // Set new timer for auto-save (2 seconds after user stops typing)
+    autoSaveTimerRef.current = setTimeout(() => {
+      autoSaveResume();
+    }, 2000);
+
+    // Cleanup
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, [resumeData]);
+
+  // Format last saved time
+  const getLastSavedText = () => {
+    if (!lastSaved) return "";
+    
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - lastSaved) / 1000);
+    
+    if (diffInSeconds < 10) return "Just now";
+    if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
+    
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes === 1) return "1 minute ago";
+    if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+    
+    return lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   const handleDownloadClick = (resumeId, templateType) => {
@@ -211,6 +321,7 @@ export default function ResumeBuilder() {
 
   const saveResume = async () => {
     try {
+      setSaveStatus("saving");
       let updatedResumeData = structuredClone(resumeData);
 
       //Remove image from resume data
@@ -232,9 +343,12 @@ export default function ResumeBuilder() {
         },
       });
       setResumeData(data.resume);
+      setLastSaved(new Date());
+      setSaveStatus("saved");
       /* toast.success(data.message); */
     } catch (error) {
       console.error("Error saving resume:", error);
+      setSaveStatus("unsaved");
       toast.error("Failed to save resume.");
     }
   };
@@ -248,6 +362,35 @@ export default function ResumeBuilder() {
   };
   return (
     <div>
+      {/* Auto-save Info Tooltip */}
+      {showAutoSaveInfo && (
+        <div className="fixed top-4 right-4 z-50 max-w-sm animate-slideIn">
+          <div className="bg-blue-600 text-white rounded-lg shadow-2xl p-4 border-2 border-blue-700">
+            <div className="flex items-start gap-3">
+              <div className="shrink-0 w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h4 className="font-bold mb-1">Auto-Save is Active! ✨</h4>
+                <p className="text-sm opacity-90 leading-relaxed">
+                  Your changes are automatically saved every few seconds. No need to worry about losing your work!
+                </p>
+              </div>
+              <button
+                onClick={closeAutoSaveInfo}
+                className="shrink-0 hover:bg-white/20 rounded p-1 transition-colors"
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* <div className="max-w-7xl mx-auto px-4 py-6">
         <Link
           to="/app"
@@ -271,6 +414,35 @@ export default function ResumeBuilder() {
                   }%`,
                 }}
               />
+
+              {/* Auto-save Status Indicator */}
+              <div className="flex items-center justify-center gap-2 mb-3 py-2">
+                {saveStatus === "saving" && (
+                  <div className="flex items-center gap-2 text-sm text-blue-600">
+                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Saving...</span>
+                  </div>
+                )}
+                {saveStatus === "saved" && lastSaved && (
+                  <div className="flex items-center gap-2 text-sm text-green-600">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span>Saved {getLastSavedText()}</span>
+                  </div>
+                )}
+                {saveStatus === "unsaved" && (
+                  <div className="flex items-center gap-2 text-sm text-orange-600">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Unsaved changes</span>
+                  </div>
+                )}
+              </div>
 
               {/* Section Navigation */}
               <div className="flex justify-between items-center mb-6 border-b border-gray-300 py-1 ">
@@ -404,18 +576,45 @@ export default function ResumeBuilder() {
                 )}
               </div>
 
-              <button
-                onClick={() => {
-                  toast.promise(saveResume(), {
-                    pending: "Saving...",
-                    success: "Resume saved successfully!",
-                    error: "Failed to save resume",
-                  });
-                }}
-                className="mt-6 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Save Changes
-              </button>
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={() => {
+                    toast.promise(saveResume(), {
+                      pending: "Saving...",
+                      success: "Resume saved successfully!",
+                      error: "Failed to save resume",
+                    });
+                  }}
+                  disabled={saveStatus === "saving"}
+                  className={`flex-1 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 ${
+                    saveStatus === "saving" ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                >
+                  {saveStatus === "saving" ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                      </svg>
+                      Save Now
+                    </>
+                  )}
+                </button>
+                <Link
+                  to="/app"
+                  className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors flex items-center justify-center gap-2"
+                >
+                  <ArrowLeftIcon className="size-4" />
+                  Back
+                </Link>
+              </div>
             </div>
           </div>
 
