@@ -12,13 +12,6 @@ export default function Leaderboard() {
     dispatch(fetchLeaderboard({ limit: 10, period: 'all' }));
   }, [dispatch]);
 
-  // Debug logging
-  useEffect(() => {
-    console.log('Leaderboard Data:', leaderboard);
-    console.log('User Rank:', userRank);
-    console.log('Current User:', user);
-  }, [leaderboard, userRank, user]);
-
   const getRankIcon = (rank) => {
     switch (rank) {
       case 1:
