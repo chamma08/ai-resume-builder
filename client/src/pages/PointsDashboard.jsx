@@ -385,9 +385,8 @@ export default function PointsDashboard() {
           Referral Program
         </h3>
         <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">
-          Invite friends and earn{" "}
-          <span className="font-bold text-green-600">200 points</span> for each
-          successful referral!
+          Invite friends and earn tiered rewards! Your friends also get{" "}
+          <span className="font-bold text-green-600">+25 bonus points</span> when they sign up with your code!
         </p>
 
         {referralCode ? (
@@ -410,10 +409,15 @@ export default function PointsDashboard() {
                 Copy
               </button>
             </div>
-            <p className="text-xs sm:text-sm text-gray-500 mt-2">
-              Share this code with friends. They enter it during signup, and you
-              both benefit!
-            </p>
+            <div className="mt-3 p-2 sm:p-3 bg-linear-to-r from-green-50 to-blue-50 rounded border border-green-200">
+              <p className="text-xs sm:text-sm font-semibold text-gray-700 mb-2">🎁 Referral Rewards:</p>
+              <div className="space-y-1 text-xs sm:text-sm">
+                <p className="text-gray-600">• New user gets <span className="font-bold text-green-600">+25 points</span> bonus</p>
+                <p className="text-gray-600">• You get <span className="font-bold text-blue-600">+50 points</span> for 1st referral</p>
+                <p className="text-gray-600">• You get <span className="font-bold text-purple-600">+100 points</span> for 2nd referral</p>
+                <p className="text-gray-600">• You get <span className="font-bold text-orange-600">+200 points</span> for 3rd+ referrals</p>
+              </div>
+            </div>
           </div>
         ) : (
           <button
@@ -447,8 +451,8 @@ export default function PointsDashboard() {
             <p className="text-xs sm:text-sm text-gray-700">Follow on social media</p>
           </div>
           <div className="p-3 sm:p-4 bg-yellow-50 rounded-lg">
-            <p className="font-bold text-yellow-700 mb-1 sm:mb-2 text-sm sm:text-base">+200 Points</p>
-            <p className="text-xs sm:text-sm text-gray-700">Refer a friend</p>
+            <p className="font-bold text-yellow-700 mb-1 sm:mb-2 text-sm sm:text-base">+50/100/200 Points</p>
+            <p className="text-xs sm:text-sm text-gray-700">Refer friends (tiered rewards)</p>
           </div>
         </div>
       </div>

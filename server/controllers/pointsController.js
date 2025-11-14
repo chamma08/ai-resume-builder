@@ -315,6 +315,18 @@ export const applyReferralCode = async (userId, referralCode) => {
       return { success: false, message: 'User not found' };
     }
     
+    // Calculate referral bonus based on number of successful referrals
+    const referralCount = referrer.referrals.length;
+    let referrerPoints;
+    
+    if (referralCount === 0) {
+      referrerPoints = 50; // First referral
+    } else if (referralCount === 1) {
+      referrerPoints = 100; // Second referral
+    } else {
+      referrerPoints = 200; // Third referral onwards
+    }
+    
     // Link users - use validateBeforeSave: false to avoid validation issues
     newUser.referredBy = referrer._id;
     await newUser.save({ validateBeforeSave: false });
@@ -322,20 +334,42 @@ export const applyReferralCode = async (userId, referralCode) => {
     referrer.referrals.push(newUser._id);
     await referrer.save({ validateBeforeSave: false });
     
-    // Award points to referrer
-    const points = POINT_VALUES.REFERRAL;
-    await referrer.addPoints(points, 'REFERRAL');
+    // Award bonus points to NEW user (25 points bonus)
+    const newUserBonus = 25;
+    await newUser.addPoints(newUserBonus, 'REFERRAL');
     
-    // Create activity
+    // Create activity for new user
+    await Activity.create({
+      user: newUser._id,
+      type: 'REFERRAL',
+      points: newUserBonus,
+      description: `Referral bonus for using ${referrer.name}'s code`,
+      metadata: { referrerId: referrer._id, isReferee: true }
+    });
+    
+    // Award tiered points to referrer
+    await referrer.addPoints(referrerPoints, 'REFERRAL');
+    
+    // Create activity for referrer
     await Activity.create({
       user: referrer._id,
       type: 'REFERRAL',
-      points,
-      description: `Referred ${newUser.name}`,
-      metadata: { referredUserId: newUser._id }
+      points: referrerPoints,
+      description: `Referred ${newUser.name} (Referral #${referralCount + 1})`,
+      metadata: { 
+        referredUserId: newUser._id, 
+        referralNumber: referralCount + 1,
+        pointsAwarded: referrerPoints
+      }
     });
     
-    return { success: true, referrer: referrer.name };
+    return { 
+      success: true, 
+      referrer: referrer.name,
+      newUserBonus,
+      referrerPoints,
+      referralNumber: referralCount + 1
+    };
   } catch (error) {
     console.error('Apply referral code error:', error);
     return { success: false, message: error.message };

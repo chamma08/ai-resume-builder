@@ -74,7 +74,9 @@ export const signUp = async (req, res) => {
     if (referralCode) {
       const referralResult = await applyReferralCode(newUser._id, referralCode);
       if (referralResult.success) {
-        console.log(`User referred by: ${referralResult.referrer}`);
+        console.log(`User referred by: ${referralResult.referrer}, New user bonus: ${referralResult.newUserBonus}, Referrer received: ${referralResult.referrerPoints}`);
+      } else {
+        console.log(`Referral code application failed: ${referralResult.message}`);
       }
     }
 
