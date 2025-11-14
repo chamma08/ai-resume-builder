@@ -162,7 +162,7 @@ const handleClose = () => {
           <div className="p-8">
             {/* Header */}
             <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-r from-blue-500 to-purple-600 rounded-full mb-4">
                 <FaHeart className="text-white text-2xl" />
               </div>
               <h2 className="text-2xl font-bold text-gray-800 mb-2">
@@ -275,7 +275,7 @@ const handleClose = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+                className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -317,7 +317,7 @@ const handleClose = () => {
         ) : (
           /* Thank You Screen */
           <div className="p-8 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-green-400 to-green-600 rounded-full mb-6 animate-bounce">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-linear-to-r from-green-400 to-green-600 rounded-full mb-6 animate-bounce">
               <svg
                 className="w-10 h-10 text-white"
                 fill="none"

@@ -10,6 +10,7 @@ import API from "../configs/api";
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showReferralInput, setShowReferralInput] = useState(false);
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
@@ -22,8 +23,10 @@ export default function SignUp() {
 
   const [formData, setFormData] = useState({
     name: "",
+    username: "",
     email: "",
     password: "",
+    confirmPassword: "",
     referralCode: "",
   });
 
@@ -80,8 +83,26 @@ export default function SignUp() {
     e.preventDefault();
 
     // Validation
-    if (!formData.name || !formData.email || !formData.password) {
+    if (!formData.name || !formData.username || !formData.email || !formData.password) {
       toast.error("Please fill in all fields", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    // Username validation
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!usernameRegex.test(formData.username)) {
+      toast.error("Username can only contain letters, numbers, and underscores", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    if (formData.username.length < 3 || formData.username.length > 30) {
+      toast.error("Username must be between 3 and 30 characters", {
         position: "top-right",
         autoClose: 3000,
       });
@@ -96,6 +117,15 @@ export default function SignUp() {
       toast.error("Password does not meet security requirements", {
         position: "top-right",
         autoClose: 4000,
+      });
+      return;
+    }
+
+    // Confirm password validation
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match", {
+        position: "top-right",
+        autoClose: 3000,
       });
       return;
     }
@@ -128,7 +158,7 @@ export default function SignUp() {
         // Update Redux state
         dispatch(login({ user: data.user, token: data.token }));
         // Clear form fields
-        setFormData({ name: "", email: "", password: "" });
+        setFormData({ name: "", username: "", email: "", password: "", confirmPassword: "", referralCode: "" });
         // Navigate to dashboard after a short delay
         setTimeout(() => {
           navigate("/app");
@@ -180,7 +210,7 @@ export default function SignUp() {
         </div>
 
         {/* Right Side - Form */}
-        <div className="w-full md:w-1/2 bg-white p-4 sm:p-6 md:p-7 lg:p-8">
+        <div className="w-full md:w-1/2 bg-white p-4 sm:p-6 md:p-7 lg:p-8 overflow-y-auto max-h-screen md:max-h-[90vh] signup-scrollbar">
           {/* Mobile Header */}
           <div className="md:hidden text-center mb-4">
             <h1 className="text-xl font-bold text-black mb-1">
@@ -212,6 +242,27 @@ export default function SignUp() {
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition-all"
                 required
               />
+            </div>
+
+            <div>
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Username
+              </label>
+              <input
+                type="text"
+                placeholder="Choose a username"
+                id="username"
+                value={formData.username}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-red-900 focus:border-transparent transition-all"
+                required
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Only letters, numbers, and underscores (3-30 characters)
+              </p>
             </div>
 
             <div>
@@ -269,7 +320,14 @@ export default function SignUp() {
                 </button>
               </div>
               
-              {/* Password Strength Indicator */}
+              {/* Password Requirements - Compact Version */}
+              {(!passwordTouched || !formData.password) && (
+                <p className="mt-1 text-xs text-gray-500">
+                  Must include: 8+ chars, uppercase, lowercase, number, special char
+                </p>
+              )}
+              
+              {/* Password Validation Feedback */}
               {passwordTouched && formData.password && (
                 <div className="mt-2">
                   {passwordErrors.length === 0 ? (
@@ -285,7 +343,7 @@ export default function SignUp() {
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                         </svg>
-                        Password is not strong enough:
+                        Missing requirements:
                       </p>
                       <ul className="space-y-0.5 ml-5">
                         {passwordErrors.map((error, index) => (
@@ -298,21 +356,66 @@ export default function SignUp() {
                   )}
                 </div>
               )}
-              
-              {/* Password Requirements */}
-              {!passwordTouched && (
-                <div className="mt-2 space-y-1">
-                  <p className="text-xs font-medium text-gray-700">Password must contain:</p>
-                  <ul className="text-xs text-gray-600 space-y-0.5 ml-4">
-                    <li className="list-disc">At least 8 characters</li>
-                    <li className="list-disc">One uppercase letter (A-Z)</li>
-                    <li className="list-disc">One lowercase letter (a-z)</li>
-                    <li className="list-disc">One number (0-9)</li>
-                    <li className="list-disc">One special character (!@#$%^&*, etc.)</li>
-                  </ul>
-                </div>
-              )}
             </div>
+
+            {/* Confirm Password Field - Shows when password is valid */}
+            {passwordTouched && formData.password && passwordErrors.length === 0 && (
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Re-enter your password"
+                    id="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className={`w-full rounded-lg border px-3 py-2 pr-10 text-sm outline-none focus:ring-2 transition-all ${
+                      formData.confirmPassword && formData.password !== formData.confirmPassword
+                        ? "border-red-500 focus:ring-red-500"
+                        : formData.confirmPassword && formData.password === formData.confirmPassword
+                        ? "border-green-500 focus:ring-green-500"
+                        : "border-gray-300 focus:ring-red-900"
+                    }`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+                {formData.confirmPassword && (
+                  <div className="mt-1">
+                    {formData.password === formData.confirmPassword ? (
+                      <p className="text-xs text-green-600 flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        Passwords match ✓
+                      </p>
+                    ) : (
+                      <p className="text-xs text-red-600 flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        Passwords do not match
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Referral Code Toggle Button */}
             <div>

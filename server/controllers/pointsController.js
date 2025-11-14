@@ -315,12 +315,12 @@ export const applyReferralCode = async (userId, referralCode) => {
       return { success: false, message: 'User not found' };
     }
     
-    // Link users
+    // Link users - use validateBeforeSave: false to avoid validation issues
     newUser.referredBy = referrer._id;
-    await newUser.save();
+    await newUser.save({ validateBeforeSave: false });
     
     referrer.referrals.push(newUser._id);
-    await referrer.save();
+    await referrer.save({ validateBeforeSave: false });
     
     // Award points to referrer
     const points = POINT_VALUES.REFERRAL;

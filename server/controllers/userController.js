@@ -16,21 +16,45 @@ const generateToken = (userId) => {
 
 export const signUp = async (req, res) => {
   try {
-    const { name, email, password, referralCode } = req.body;
+    const { name, username, email, password, referralCode } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const existingUser = await User.findOne({ email });
+    // Validate username format
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!usernameRegex.test(username)) {
+      return res.status(400).json({ 
+        message: "Username can only contain letters, numbers, and underscores" 
+      });
+    }
+
+    if (username.length < 3 || username.length > 30) {
+      return res.status(400).json({ 
+        message: "Username must be between 3 and 30 characters" 
+      });
+    }
+
+    // Check if user exists by email or username
+    const existingUser = await User.findOne({ 
+      $or: [{ email }, { username: username.toLowerCase() }] 
+    });
+    
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      if (existingUser.email === email) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+      if (existingUser.username === username.toLowerCase()) {
+        return res.status(400).json({ message: "Username already taken" });
+      }
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
       name,
+      username: username.toLowerCase(),
       email,
       password: hashedPassword,
     });

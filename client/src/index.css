@@ -102,3 +102,28 @@
 .animate-slideIn {
   animation: slideIn 0.4s ease-out;
 }
+
+/* Custom Scrollbar Styles */
+.signup-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.signup-scrollbar::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.signup-scrollbar::-webkit-scrollbar-thumb {
+  background: #7f1d1d;
+  border-radius: 10px;
+}
+
+.signup-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #991b1b;
+}
+
+/* Firefox */
+.signup-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #7f1d1d #f1f1f1;
+}
