@@ -9,7 +9,7 @@ export default function Leaderboard() {
   const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    dispatch(fetchLeaderboard({ limit: 50, period: 'all' }));
+    dispatch(fetchLeaderboard({ limit: 10, period: 'all' }));
   }, [dispatch]);
 
   // Debug logging
@@ -94,7 +94,7 @@ export default function Leaderboard() {
             </div>
             <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 w-full text-center">
               <p className="text-xs sm:text-sm text-gray-500 mb-1">#2</p>
-              <p className="font-bold text-base sm:text-lg mb-1 truncate">{leaderboard[1]?.name}</p>
+              <p className="font-bold text-base sm:text-lg mb-1 truncate">@{leaderboard[1]?.username || leaderboard[1]?.name}</p>
               <p className="text-xs sm:text-sm text-gray-600 mb-2 truncate">{leaderboard[1]?.email}</p>
               <p className="text-xl sm:text-2xl font-bold text-blue-600">{leaderboard[1]?.points} pts</p>
               <span className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-semibold mt-2 ${getLevelColor(leaderboard[1]?.level)}`}>
@@ -112,7 +112,7 @@ export default function Leaderboard() {
             </div>
             <div className="bg-white rounded-lg shadow-lg p-3 sm:p-4 w-full text-center border-2 sm:border-4 border-yellow-400">
               <p className="text-xs sm:text-sm text-yellow-600 font-bold mb-1">🏆 CHAMPION</p>
-              <p className="font-bold text-lg sm:text-xl mb-1 truncate">{leaderboard[0]?.name}</p>
+              <p className="font-bold text-lg sm:text-xl mb-1 truncate">@{leaderboard[0]?.username || leaderboard[0]?.name}</p>
               <p className="text-xs sm:text-sm text-gray-600 mb-2 truncate">{leaderboard[0]?.email}</p>
               <p className="text-2xl sm:text-3xl font-bold text-yellow-600">{leaderboard[0]?.points} pts</p>
               <span className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-semibold mt-2 ${getLevelColor(leaderboard[0]?.level)}`}>
@@ -130,7 +130,7 @@ export default function Leaderboard() {
             </div>
             <div className="bg-white rounded-lg shadow-md p-3 sm:p-4 w-full text-center">
               <p className="text-xs sm:text-sm text-gray-500 mb-1">#3</p>
-              <p className="font-bold text-base sm:text-lg mb-1 truncate">{leaderboard[2]?.name}</p>
+              <p className="font-bold text-base sm:text-lg mb-1 truncate">@{leaderboard[2]?.username || leaderboard[2]?.name}</p>
               <p className="text-xs sm:text-sm text-gray-600 mb-2 truncate">{leaderboard[2]?.email}</p>
               <p className="text-xl sm:text-2xl font-bold text-blue-600">{leaderboard[2]?.points} pts</p>
               <span className={`inline-block px-2 sm:px-3 py-1 rounded-full text-xs font-semibold mt-2 ${getLevelColor(leaderboard[2]?.level)}`}>
@@ -174,7 +174,7 @@ export default function Leaderboard() {
                     <td className="px-3 lg:px-6 py-3 lg:py-4">
                       <div className="flex flex-col">
                         <span className="font-medium text-gray-900 text-sm lg:text-base">
-                          {entry.name}
+                          @{entry.username || entry.name}
                           {isCurrentUser && (
                             <span className="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded">You</span>
                           )}
@@ -236,7 +236,7 @@ export default function Leaderboard() {
                 
                 <div className="mb-2">
                   <span className="font-medium text-gray-900 text-base">
-                    {entry.name}
+                    @{entry.username || entry.name}
                     {isCurrentUser && (
                       <span className="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded">You</span>
                     )}

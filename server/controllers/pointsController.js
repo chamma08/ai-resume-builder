@@ -170,7 +170,7 @@ export const getLeaderboard = async (req, res) => {
     
     // Fetch all users sorted by points
     const leaderboard = await User.find({})
-      .select('name email points level badges')
+      .select('name username email points level badges')
       .sort({ points: -1, createdAt: 1 }) // Sort by points descending, then by creation date for ties
       .limit(parseInt(limit))
       .lean();
